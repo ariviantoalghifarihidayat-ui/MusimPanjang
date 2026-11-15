@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F4D36">
+<meta name="description" content="Prototype MUSIM PANJANG — Unit Olah Keliling berbasis Radar Harga Digital. Kelebihan Panen Hari Ini, Bahan Baku Sepanjang Tahun.">
+<title>MUSIM PANJANG — Unit Olah Keliling</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='34' r='28' fill='%23E4513B'/%3E%3Ccircle cx='32' cy='34' r='21' fill='%23FCE8C8'/%3E%3Cpath d='M20 40a12 12 0 0 1 24 0z' fill='%23F4B740'/%3E%3Cpath d='M11 40h42a21 21 0 0 1-42 0z' fill='%233F8A4F'/%3E%3Cpath d='M32 4l4 6 7-1-4 6 5 4h-24l5-4-4-6 7 1z' fill='%235FA35A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1E2A22; --ink2:#3A4A3F; --muted:#6E7B71;
+  --forest:#1F4D36; --forest2:#2E6B4A; --leaf:#5FA35A; --mint:#E3F0DF;
+  --cream:#FBF6EC; --paper:#FFFDF8; --line:#ECE3D2;
+  --tomato:#E4513B; --chili:#C7362B; --sun:#F4B740; --sun2:#FBD989;
+  --sky:#3E6FA3; --plum:#7A4E8C;
+  --accent:var(--leaf);
+  --r:20px; --r-sm:12px;
+  --shadow:0 1px 2px rgba(30,42,34,.06),0 8px 24px -8px rgba(30,42,34,.14);
+  --shadow-lg:0 30px 60px -20px rgba(31,77,54,.35);
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --display:"Fraunces",Georgia,serif;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ============ SCREENS ============ */
+.screen{position:fixed;inset:0;display:none;overflow:hidden}
+.screen.active{display:block}
+#app.screen{overflow:visible;position:relative;min-height:100%}
+#app.screen.active{display:flex}
+
+/* ============ INTRO ============ */
+#intro{background:#0E2233;z-index:50}
+.scene{position:absolute;inset:0;width:100%;height:100%}
+.night{animation:fadeOut 1.8s ease .2s forwards}
+.stars circle{animation:twinkle 1.6s ease-in-out infinite alternate,fadeOut 1.4s ease .6s forwards}
+.stars circle:nth-child(3n){animation-delay:.4s,.6s}
+.stars circle:nth-child(4n){animation-delay:.8s,.6s}
+.sun-g{animation:sunRise 2.4s var(--ease) .3s both}
+.sun-glow{animation:pulseGlow 3s ease-in-out infinite}
+.hill-far{animation:riseIn 1.6s var(--ease) .1s both}
+.hill-mid{animation:riseIn 1.6s var(--ease) .25s both}
+.cloud{animation:drift 26s linear infinite}
+.cloud.c2{animation-duration:38s;animation-delay:-12s}
+.truck-move{animation:drive 2.8s cubic-bezier(.25,.75,.25,1) .5s both,driveOff 1.3s cubic-bezier(.6,0,.9,.4) 5.1s forwards}
+.truck-bob{animation:bob .35s ease-in-out infinite alternate}
+.wheel{transform-box:fill-box;transform-origin:center;animation:spin .45s linear infinite}
+.parked .wheel{animation-play-state:paused}
+.parked .truck-bob{animation-play-state:paused}
+.puff{transform-box:fill-box;transform-origin:center;animation:puff 1.1s ease-out infinite;opacity:0}
+.puff:nth-child(2){animation-delay:.35s}.puff:nth-child(3){animation-delay:.7s}
+.intro-brand{position:absolute;left:0;right:0;top:9vh;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 20px;pointer-events:none}
+.intro-emblem{width:clamp(84px,14vw,120px);height:auto;filter:drop-shadow(0 12px 24px rgba(0,0,0,.25));animation:emblemPop .9s cubic-bezier(.3,1.6,.5,1) 3.1s both}
+.intro-title{font-family:var(--display);font-weight:800;color:var(--forest);font-size:clamp(34px,7vw,74px);letter-spacing:-.02em;line-height:1;margin-top:14px;white-space:nowrap}
+.intro-title span{display:inline-block;animation:letterIn .6s cubic-bezier(.3,1.5,.5,1) both}
+.intro-sub{margin-top:10px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;font-size:clamp(10px,1.6vw,13px);color:var(--forest2);animation:fadeUp .7s var(--ease) 4.1s both}
+.intro-tag{margin-top:14px;font-size:clamp(14px,2.2vw,18px);color:var(--ink2);max-width:520px;animation:fadeUp .7s var(--ease) 4.4s both}
+.intro-tag b{color:var(--tomato)}
+.loader{position:absolute;left:50%;bottom:calc(28px + var(--safe-b));transform:translateX(-50%);width:min(260px,60vw);height:6px;background:rgba(255,255,255,.35);border-radius:99px;overflow:hidden}
+.loader i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--sun),var(--tomato));transform-origin:left;animation:load 5.8s linear both;border-radius:inherit}
+.skip{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;padding:8px 16px;border-radius:99px;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.35);transition:.3s;z-index:3}
+.skip:hover{background:rgba(255,255,255,.3)}
+.particle{position:absolute;left:50%;top:calc(9vh + 50px);width:30px;height:30px;pointer-events:none;animation:burst 1.8s cubic-bezier(.15,.7,.3,1) forwards}
+.particle svg{width:100%;height:100%}
+
+/* reveal wipe */
+.wipe{position:fixed;inset:0;z-index:80;pointer-events:none;background:var(--forest);clip-path:circle(0% at 50% 50%);display:grid;place-items:center}
+.wipe.go{animation:wipeIn .55s cubic-bezier(.7,0,.3,1) forwards}
+.wipe.out{animation:wipeOut .7s cubic-bezier(.7,0,.3,1) forwards}
+.wipe svg{width:90px;height:90px;animation:spinSlow 1.2s linear infinite}
+
+/* ============ LOGIN ============ */
+#login{background:var(--cream);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.login-wrap{min-height:100%;display:grid;grid-template-columns:1.05fr 1fr}
+.login-hero{position:relative;background:radial-gradient(120% 90% at 20% 10%,#2E6B4A 0%,#1F4D36 55%,#163A28 100%);color:#F4EFE3;padding:40px clamp(28px,4vw,56px);display:flex;flex-direction:column;overflow:hidden}
+.login-hero::after{content:"";position:absolute;inset:auto -10% -30% -10%;height:55%;background:radial-gradient(60% 60% at 50% 0%,rgba(244,183,64,.28),transparent 70%);pointer-events:none}
+.brand-row{display:flex;align-items:center;gap:12px;position:relative;z-index:2}
+.brand-row svg{width:46px;height:46px}
+.brand-name{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em;line-height:1}
+.brand-name small{display:block;font-family:var(--font);font-weight:600;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;opacity:.75;margin-top:4px}
+.hero-center{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;position:relative;z-index:2;padding:30px 0}
+.hero-mascot{display:flex;align-items:flex-end;gap:10px;margin-bottom:18px}
+.hero-mascot .tomi{width:clamp(150px,16vw,210px);height:auto}
+.bubble{position:relative;background:var(--paper);color:var(--ink);padding:12px 16px;border-radius:18px 18px 18px 4px;font-weight:600;font-size:14.5px;max-width:230px;box-shadow:var(--shadow-lg);margin-bottom:120px;transform-origin:bottom left;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.bubble.swap{animation:none;transform:scale(.9);opacity:.3}
+.hero-h{font-family:var(--display);font-size:clamp(30px,3.4vw,46px);line-height:1.05;letter-spacing:-.02em;font-weight:800;max-width:520px}
+.hero-h em{font-style:normal;color:var(--sun);position:relative;white-space:nowrap}
+.hero-h em::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.14em;background:var(--tomato);border-radius:4px;transform-origin:left;animation:underline 1s var(--ease) .6s both;z-index:-1}
+.hero-p{margin-top:14px;opacity:.82;max-width:460px;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);padding:8px 12px;border-radius:99px;font-size:13px;font-weight:600;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.chip b{color:var(--sun)}
+.floaty{position:absolute;opacity:.9;z-index:1;animation:float 6s ease-in-out infinite;pointer-events:none}
+.hero-foot{position:relative;z-index:2;font-size:12px;opacity:.6}
+
+.login-panel{padding:40px clamp(22px,4vw,64px);display:flex;flex-direction:column;justify-content:center;max-width:620px;width:100%;margin:0 auto}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--tomato)}
+.panel-h{font-family:var(--display);font-size:clamp(26px,3vw,34px);font-weight:800;letter-spacing:-.02em;margin:6px 0 4px}
+.panel-p{color:var(--muted);font-size:14.5px}
+.roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:22px 0}
+.role{position:relative;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:14px;transition:transform .35s var(--ease),border-color .3s,box-shadow .3s,background .3s;overflow:hidden;opacity:0;animation:fadeUp .5s var(--ease) both}
+.role:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.role .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c);margin-bottom:10px;transition:.35s var(--ease)}
+.role .ic svg{width:22px;height:22px}
+.role b{display:block;font-size:14.5px}
+.role span{display:block;font-size:12px;color:var(--muted);line-height:1.35;margin-top:2px}
+.role .check{position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;transform:scale(0);transition:.35s cubic-bezier(.3,1.6,.5,1)}
+.role .check svg{width:13px;height:13px}
+.role.sel{border-color:var(--c);background:color-mix(in srgb,var(--c) 7%,#fff);box-shadow:0 10px 24px -12px color-mix(in srgb,var(--c) 70%,transparent)}
+.role.sel .check{transform:scale(1)}
+.role.sel .ic{background:var(--c);color:#fff;transform:rotate(-8deg) scale(1.05)}
+.field{position:relative;margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink2)}
+.input{width:100%;height:50px;border-radius:14px;border:1.5px solid var(--line);background:var(--paper);padding:0 46px 0 44px;font-size:15px;transition:border-color .25s,box-shadow .25s}
+.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
+.field .lead{position:absolute;left:14px;bottom:15px;width:20px;height:20px;color:var(--muted)}
+.field .eye{position:absolute;right:8px;bottom:7px;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.field .eye:hover{background:var(--mint)}
+.row-between{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;margin:4px 0 18px;gap:12px}
+.check-l{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--ink2)}
+.check-l input{accent-color:var(--accent);width:16px;height:16px}
+.link{color:var(--forest2);font-weight:600;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border-radius:14px;font-weight:700;font-size:15px;transition:transform .2s var(--ease),box-shadow .3s,background .3s,opacity .3s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 10px 22px -10px color-mix(in srgb,var(--accent) 90%,transparent)}
+.btn-primary:hover{box-shadow:0 14px 28px -10px color-mix(in srgb,var(--accent) 90%,transparent);transform:translateY(-1px)}
+.btn-dark{background:var(--forest);color:#fff}
+.btn-ghost{background:var(--paper);border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn-sm{height:38px;padding:0 14px;font-size:13.5px;border-radius:11px}
+.btn-block{width:100%}
+.btn .spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spinSlow .7s linear infinite;display:none}
+.btn.loading .spin{display:block}.btn.loading .lbl{opacity:.8}
+.demo-hint{margin-top:14px;font-size:12.5px;color:var(--muted);background:var(--mint);border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start}
+.demo-hint svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--forest2)}
+.shake{animation:shake .4s}
+
+/* ============ MASCOT ============ */
+.tomi .t-bob{animation:tbob 2.4s ease-in-out infinite}
+.tomi .t-eye{transform-box:fill-box;transform-origin:center;animation:blink 4.2s infinite}
+.tomi .t-pupils{transition:transform .25s var(--ease)}
+.tomi .t-arm{transform-box:view-box;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.tomi .t-arm-l{transform-origin:50px 138px;transform:rotate(20deg)}
+.tomi .t-arm-r{transform-origin:150px 138px;transform:rotate(-20deg)}
+.tomi.wave .t-arm-r{animation:wave 1s ease-in-out infinite}
+.tomi.cover .t-arm-l{transform:rotate(-118deg);animation:none}
+.tomi.cover .t-arm-r{transform:rotate(118deg);animation:none}
+.tomi .m-open{display:none}
+.tomi.happy .m-open{display:block}.tomi.happy .m-smile{display:none}
+.tomi.jump .t-bob{animation:tjump .6s cubic-bezier(.3,1.6,.5,1)}
+.tomi .t-hat{transform-box:view-box;transform-origin:100px 60px;transition:transform .4s}
+.tomi.cover .t-hat{transform:rotate(-6deg) translateY(-3px)}
+
+/* ============ APP SHELL ============ */
+#app{background:var(--cream)}
+.side{position:sticky;top:0;height:100vh;width:260px;flex:none;background:var(--forest);color:#EDE7DA;padding:22px 16px;display:flex;flex-direction:column;gap:18px;z-index:5}
+.side .brand-row svg{width:40px;height:40px}
+.side .brand-name{font-size:17px}
+.who{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px}
+.ava{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-weight:800;background:var(--accent);color:#fff;flex:none;font-size:15px}
+.who b{display:block;font-size:14px;line-height:1.2}
+.who small{font-size:12px;opacity:.7}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:inherit;text-decoration:none;font-weight:600;font-size:14.5px;opacity:.78;transition:.25s;position:relative}
+.nav a svg{width:20px;height:20px}
+.nav a:hover{opacity:1;background:rgba(255,255,255,.06)}
+.nav a.on{opacity:1;background:rgba(255,255,255,.12)}
+.nav a.on::before{content:"";position:absolute;left:-16px;top:10px;bottom:10px;width:4px;border-radius:0 4px 4px 0;background:var(--accent)}
+.side .spacer{flex:1}
+.side-card{background:linear-gradient(135deg,rgba(244,183,64,.22),rgba(228,81,59,.18));border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;font-size:12.5px}
+.side-card b{display:block;font-size:13.5px;margin-bottom:4px;color:#fff}
+.logout{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;font-weight:600;font-size:14px;color:#F6C7BE;transition:.25s}
+.logout:hover{background:rgba(228,81,59,.16)}
+.logout svg{width:20px;height:20px}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:14px;padding:14px clamp(16px,3vw,32px);background:color-mix(in srgb,var(--cream) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+.top.scrolled{border-color:var(--line)}
+.top .mlogo{display:none;width:36px;height:36px}
+.top h1{font-family:var(--display);font-size:clamp(19px,2.2vw,25px);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.top p{font-size:13px;color:var(--muted)}
+.top .grow{flex:1;min-width:0}
+.icon-btn{position:relative;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--paper);border:1.5px solid var(--line);transition:.25s;flex:none}
+.icon-btn:hover{border-color:var(--accent)}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn .dot{position:absolute;top:8px;right:9px;width:9px;height:9px;border-radius:50%;background:var(--tomato);border:2px solid var(--paper);animation:pulseDot 2s infinite}
+.top .m-logout{display:none}
+.view{padding:6px clamp(16px,3vw,32px) 40px;flex:1}
+.view > section{scroll-margin-top:86px}
+.sec-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:28px 0 12px}
+.sec-h h2{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.sec-h p{font-size:13px;color:var(--muted)}
+.grid{display:grid;gap:16px}
+.g-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g-hero{grid-template-columns:1.5fr 1fr}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.reveal{opacity:0;transform:translateY(18px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.card h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card .sub{font-size:12.5px;color:var(--muted)}
+.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.kpi .val{font-size:clamp(22px,2.4vw,28px);font-weight:800;letter-spacing:-.02em;margin-top:6px;line-height:1.1}
+.kpi .val small{font-size:13px;font-weight:600;color:var(--muted);margin-left:3px}
+.kpi .delta{font-size:12px;font-weight:700;margin-top:6px;display:inline-flex;gap:4px;align-items:center;padding:3px 8px;border-radius:99px}
+.up{background:#E3F0DF;color:#2E6B4A}.down{background:#FCE3DE;color:#B33A27}
+.kpi .kic{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c,var(--accent)) 14%,#fff);color:var(--c,var(--accent))}
+.kpi .kic svg{width:20px;height:20px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:99px}
+.b-siaga{background:#FCE3DE;color:#B33A27}
+.b-waspada{background:#FDF0D3;color:#9A6A0B}
+.b-normal{background:#E3F0DF;color:#2E6B4A}
+.b-menuju{background:#E0EAF5;color:#2F5A86}
+.b-info{background:var(--mint);color:var(--forest2)}
+.pulse{width:8px;height:8px;border-radius:50%;background:currentColor;position:relative}
+.pulse::after{content:"";position:absolute;inset:0;border-radius:50%;background:currentColor;animation:ring 1.6s ease-out infinite}
+
+/* Hero card */
+.hero-card{background:radial-gradient(120% 140% at 100% 0%,#3B7F57 0%,#1F4D36 55%,#173C2A 100%);color:#F4EFE3;border:0;min-height:230px;display:flex;flex-direction:column;justify-content:space-between}
+.hero-card .sub{color:rgba(244,239,227,.75)}
+.hero-card h2{font-family:var(--display);font-weight:800;font-size:clamp(22px,2.6vw,30px);letter-spacing:-.02em;line-height:1.1;margin:10px 0 6px;max-width:460px}
+.hero-card .mini-truck{position:absolute;right:-10px;bottom:6px;width:min(250px,48%);opacity:.95;animation:truckIdle 3s ease-in-out infinite}
+.hero-stats{display:flex;gap:22px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:2}
+.hero-stats div{font-size:12px;color:rgba(244,239,227,.7)}
+.hero-stats b{display:block;font-size:20px;color:#fff;letter-spacing:-.01em}
+.hero-card .road{position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 22px,transparent 22px 40px);animation:roadMove 1s linear infinite;opacity:.5}
+
+/* price compare */
+.price-big{display:flex;align-items:baseline;gap:6px;margin-top:8px}
+.price-big b{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--forest)}
+.price-big span{color:var(--muted);font-weight:600}
+.cmp{margin-top:14px;display:grid;gap:10px}
+.cmp-row{font-size:12.5px}
+.cmp-row .bar{height:10px;border-radius:99px;background:#F1EADC;overflow:hidden;margin-top:5px}
+.cmp-row .bar i{display:block;height:100%;border-radius:inherit;width:0;transition:width 1.2s var(--ease)}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart .line{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1000;stroke-dashoffset:1000}
+.in .chart .line{animation:draw 1.8s var(--ease) .2s forwards}
+.chart .area{opacity:0}
+.in .chart .area{animation:fadeIn 1s ease .9s forwards}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* form setor */
+.seg{display:flex;background:#F3ECDF;border-radius:13px;padding:4px;gap:4px}
+.seg button{flex:1;height:38px;border-radius:10px;font-weight:700;font-size:13.5px;color:var(--ink2);transition:.3s var(--ease)}
+.seg button.on{background:var(--paper);color:var(--ink);box-shadow:var(--shadow)}
+.range{width:100%;-webkit-appearance:none;appearance:none;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--accent) var(--p,30%),#EFE7D8 var(--p,30%));outline:none;margin:14px 0 6px}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid var(--accent);box-shadow:var(--shadow);cursor:grab}
+.range::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:4px solid var(--accent);cursor:grab}
+.est{margin-top:14px;padding:14px;border-radius:16px;background:linear-gradient(135deg,var(--mint),#F6F0E2);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.est b{font-size:26px;letter-spacing:-.02em}
+.est small{display:block;font-size:12px;color:var(--muted)}
+.lbl-s{font-size:12.5px;font-weight:700;color:var(--ink2);margin:14px 0 6px;display:flex;justify-content:space-between}
+
+/* list */
+.list{display:flex;flex-direction:column}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.li:last-child{border-bottom:0}
+.li .lic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none;background:#FCE3DE}
+.li .lic svg{width:24px;height:24px}
+.li .grow{flex:1;min-width:0}
+.li b{font-size:14px;display:block}
+.li small{font-size:12px;color:var(--muted)}
+.li .amt{font-weight:800;font-size:14px;text-align:right}
+.li .amt small{display:block;font-weight:600}
+
+/* products */
+.prod{display:flex;flex-direction:column;gap:10px;transition:transform .35s var(--ease),box-shadow .35s}
+.prod:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.prod .art{height:130px;border-radius:14px;display:grid;place-items:center;background:var(--bg);position:relative;overflow:hidden}
+.prod .art svg{width:96px;height:96px;transition:transform .5s cubic-bezier(.3,1.5,.5,1)}
+.prod:hover .art svg{transform:scale(1.1) rotate(-6deg)}
+.prod .art .badge{position:absolute;top:10px;left:10px}
+.prod h4{font-size:15px;font-weight:700}
+.prod .desc{font-size:12.5px;color:var(--muted);flex:1}
+.prod .pr{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.prod .pr b{font-size:18px;letter-spacing:-.02em}
+.prod .pr small{font-size:12px;color:var(--muted);font-weight:600}
+.qty{display:flex;align-items:center;gap:4px;background:#F3ECDF;border-radius:12px;padding:3px}
+.qty button{width:32px;height:32px;border-radius:9px;background:var(--paper);font-weight:800;font-size:16px;display:grid;place-items:center}
+.qty span{min-width:28px;text-align:center;font-weight:800;font-size:14px}
+.switch{position:relative;width:48px;height:28px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:#E2D9C8;border-radius:99px;transition:.3s;cursor:pointer}
+.switch span::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:var(--shadow);transition:.35s cubic-bezier(.3,1.5,.5,1)}
+.switch input:checked + span{background:var(--accent)}
+.switch input:checked + span::after{transform:translateX(20px)}
+.cart-total{display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:6px;border-top:1.5px solid var(--line)}
+.cart-total b{font-size:22px;letter-spacing:-.02em}
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:18px 0}
+.fab-cart{position:fixed;right:16px;bottom:calc(84px + var(--safe-b));z-index:6;height:52px;padding:0 18px;border-radius:99px;background:var(--forest);color:#fff;font-weight:700;display:none;align-items:center;gap:10px;box-shadow:var(--shadow-lg)}
+.fab-cart .n{background:var(--tomato);min-width:24px;height:24px;border-radius:99px;display:grid;place-items:center;font-size:12px;padding:0 6px}
+.fab-cart.bump{animation:bump .4s}
+
+/* timeline */
+.tl{display:flex;flex-direction:column;gap:0;position:relative}
+.tl-i{display:flex;gap:12px;position:relative;padding-bottom:16px}
+.tl-i:last-child{padding-bottom:0}
+.tl-i::before{content:"";position:absolute;left:13px;top:28px;bottom:0;width:2px;background:var(--line)}
+.tl-i:last-child::before{display:none}
+.tl-i .tdot{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--line);color:#fff;z-index:1}
+.tl-i.done .tdot{background:var(--accent)}
+.tl-i.now .tdot{background:var(--sun);box-shadow:0 0 0 6px rgba(244,183,64,.25)}
+.tl-i .tdot svg{width:14px;height:14px}
+.tl-i b{font-size:14px;display:block}
+.tl-i small{font-size:12px;color:var(--muted)}
+
+/* scan */
+.scan-box{position:relative;aspect-ratio:1;max-width:220px;margin:6px auto 14px;border-radius:18px;background:#10251A;display:grid;place-items:center;overflow:hidden}
+.scan-box .corner{position:absolute;width:30px;height:30px;border:4px solid var(--sun)}
+.scan-box .c1{top:14px;left:14px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+.scan-box .c2{top:14px;right:14px;border-left:0;border-bottom:0;border-radius:0 10px 0 0}
+.scan-box .c3{bottom:14px;left:14px;border-right:0;border-top:0;border-radius:0 0 0 10px}
+.scan-box .c4{bottom:14px;right:14px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+.scan-box .qr{width:58%;opacity:.9}
+.scan-box .beam{position:absolute;left:10%;right:10%;height:3px;background:var(--sun);box-shadow:0 0 18px 4px rgba(244,183,64,.6);top:12%;display:none}
+.scan-box.scanning .beam{display:block;animation:beam 1.1s ease-in-out infinite alternate}
+.trace{display:none}
+.trace.show{display:block;animation:fadeUp .5s var(--ease)}
+
+/* map */
+.map-wrap{position:relative;background:linear-gradient(180deg,#E7F1F4,#D8E9EE);border-radius:18px;overflow:hidden}
+.map-wrap svg{width:100%;height:auto;display:block}
+.map-land{fill:#F6EFDF;stroke:#D8CBB0;stroke-width:2}
+.mk{cursor:pointer}
+.mk .halo{pointer-events:none;transform-box:fill-box;transform-origin:center;animation:ringSvg 2s ease-out infinite}
+.mk:hover .core{stroke-width:5}
+.mk text{font-size:18px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:#F6EFDF;stroke-width:5px;stroke-linejoin:round}
+.mk.sel .core{stroke:var(--ink);stroke-width:5}
+#radar .g-hero{align-items:start}
+.map-legend{position:absolute;left:12px;bottom:12px;display:flex;gap:10px;flex-wrap:wrap;background:rgba(255,253,248,.92);padding:8px 10px;border-radius:12px;font-size:11.5px;font-weight:700}
+.map-legend span{display:flex;align-items:center;gap:6px}
+.map-legend i{width:10px;height:10px;border-radius:50%}
+.inset{position:absolute;right:12px;top:12px;background:rgba(255,253,248,.95);border-radius:12px;padding:8px 10px;font-size:11.5px;max-width:190px;box-shadow:var(--shadow);cursor:pointer}
+.inset b{display:block;font-size:12px}
+.detail .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.detail h3{font-size:20px;font-family:var(--display);font-weight:800}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat-row div{background:#F7F1E5;border-radius:12px;padding:10px}
+.stat-row small{font-size:11px;color:var(--muted);font-weight:600;display:block}
+.stat-row b{font-size:15px}
+.table{width:100%;border-collapse:collapse;font-size:13.5px}
+.table th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:10px 8px;border-bottom:1.5px solid var(--line)}
+.table td{white-space:nowrap;padding:12px 8px;border-bottom:1px dashed var(--line);vertical-align:middle}
+.table tr:last-child td{border-bottom:0}
+.table tr{transition:background .2s}
+.table tbody tr:hover{background:#FBF5EA}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
+
+/* kru */
+.ring{position:relative;width:170px;height:170px;margin:4px auto}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:14}
+.ring .bg{stroke:#EFE7D8}
+.ring .fg{stroke:url(#gRing);stroke-linecap:round;transition:stroke-dashoffset 1.2s var(--ease)}
+.ring .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .center b{font-size:30px;letter-spacing:-.03em;display:block;line-height:1}
+.ring .center small{font-size:12px;color:var(--muted)}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;position:relative;margin-top:8px}
+.pipe::before{content:"";position:absolute;left:10%;right:10%;top:30px;height:4px;background:repeating-linear-gradient(90deg,var(--accent) 0 10px,transparent 10px 20px);background-size:20px 4px;animation:flow 0.8s linear infinite;border-radius:4px;opacity:.6}
+.stage{text-align:center;position:relative;z-index:1}
+.stage .sic{width:60px;height:60px;border-radius:18px;margin:0 auto 8px;display:grid;place-items:center;background:var(--paper);border:2px solid var(--line);transition:.3s}
+.stage .sic svg{width:28px;height:28px}
+.stage.act .sic{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,#fff);animation:stagePulse 1.6s ease-in-out infinite}
+.stage b{font-size:12.5px;display:block}
+.stage small{font-size:11.5px;color:var(--muted)}
+.gauge-row{display:grid;gap:12px}
+.gauge-row .g{display:flex;align-items:center;gap:10px;font-size:13px}
+.gauge-row .g .bar{flex:1;height:8px;border-radius:99px;background:#EFE7D8;overflow:hidden}
+.gauge-row .g .bar i{display:block;height:100%;border-radius:inherit;transition:width 1s var(--ease)}
+.gauge-row .g b{min-width:62px;text-align:right}
+
+/* bars chart */
+.bars{display:flex;align-items:flex-end;gap:10px;height:200px;padding-top:20px}
+.bars .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bars .stack{width:100%;max-width:42px;display:flex;flex-direction:column-reverse;border-radius:8px 8px 4px 4px;overflow:hidden;height:0;transition:height 1.1s var(--ease)}
+.bars .stack i{display:block;width:100%}
+.bars small{font-size:11.5px;color:var(--muted);font-weight:600}
+.bars .bv{font-size:11px;font-weight:800;color:var(--ink2);opacity:0;transition:opacity .4s .9s}
+.in .bars .bv{opacity:1}
+
+/* bottom nav */
+.bnav{display:none}
+
+/* helper */
+.helper{position:fixed;right:20px;bottom:20px;z-index:7;display:flex;align-items:flex-end;gap:8px;pointer-events:none}
+.helper .tomi{width:78px;height:auto;pointer-events:auto;cursor:pointer;filter:drop-shadow(0 8px 14px rgba(0,0,0,.18))}
+.helper .tip{pointer-events:auto;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow-lg);border-radius:16px 16px 4px 16px;padding:10px 12px;font-size:12.5px;max-width:230px;margin-bottom:56px;transform-origin:bottom right;transition:.35s cubic-bezier(.3,1.5,.5,1)}
+.helper .tip.hide{transform:scale(.6);opacity:0;pointer-events:none}
+.helper .tip b{display:block;font-size:12px;color:var(--tomato);margin-bottom:2px}
+
+/* toast & modal */
+.toasts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:calc(100% - 32px);max-width:420px}
+.toast{background:var(--ink);color:#fff;padding:12px 16px;border-radius:14px;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow-lg);animation:toastIn .45s cubic-bezier(.3,1.5,.5,1) both}
+.toast.out{animation:toastOut .3s ease forwards}
+.toast svg{width:18px;height:18px;flex:none;color:var(--sun)}
+.modal-bg{position:fixed;inset:0;background:rgba(20,30,24,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:85;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex;animation:fadeIn .25s ease}
+.modal{background:var(--paper);border-radius:24px;padding:24px;max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow-lg);animation:pop .45s cubic-bezier(.3,1.5,.5,1) both;max-height:90vh;overflow:auto}
+.modal h3{font-family:var(--display);font-size:24px;font-weight:800;margin:8px 0 4px}
+.modal p{color:var(--muted);font-size:14px}
+.ticket{margin:16px 0;border:2px dashed var(--line);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:center;text-align:left}
+.ticket .qrs{width:96px;flex:none}
+.ticket b{font-size:34px;letter-spacing:-.03em;display:block;line-height:1}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:95;pointer-events:none;animation:fall linear forwards;border-radius:2px}
+.foot-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:30px}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1100px){
+  .g-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g-hero{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .login-wrap{grid-template-columns:1fr}
+  .login-hero{padding:22px 20px 26px;min-height:auto}
+  .hero-center{padding:14px 0 0;flex-direction:row;align-items:center;flex-wrap:wrap}
+  .hero-mascot{margin:0;width:100%}
+  .hero-mascot .tomi{width:118px}
+  .bubble{margin-bottom:64px;font-size:13.5px}
+  .hero-h{font-size:26px;width:100%;margin-top:4px}
+  .hero-p{display:none}
+  .chips{margin-top:14px;gap:8px}
+  .chip{font-size:12px;padding:6px 10px}
+  .hero-foot{display:none}
+  .login-panel{padding:24px 18px 40px}
+  .roles{grid-template-columns:repeat(2,1fr);margin:16px 0}
+  .side{display:none}
+  .top .mlogo{display:block}
+  .top .m-logout{display:grid}
+  .view{padding:4px 16px calc(100px + var(--safe-b))}
+  .g-2,.g-3{grid-template-columns:1fr}
+  .bnav{display:flex;position:fixed;left:10px;right:10px;bottom:calc(10px + var(--safe-b));z-index:6;background:rgba(31,77,54,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:22px;padding:6px;box-shadow:var(--shadow-lg)}
+  .bnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:16px;color:#E7E1D4;text-decoration:none;font-size:10.5px;font-weight:700;opacity:.7;transition:.3s var(--ease)}
+  .bnav a svg{width:21px;height:21px}
+  .bnav a.on{opacity:1;background:rgba(255,255,255,.14);color:#fff}
+  .bnav a.on svg{color:var(--sun)}
+  .helper{right:10px;bottom:calc(82px + var(--safe-b))}
+  .helper .tomi{width:58px}
+  .helper .tip{margin-bottom:40px;max-width:200px}
+  .fab-cart{display:flex}
+  .pipe{grid-template-columns:repeat(5,1fr);gap:4px}
+  .stage .sic{width:48px;height:48px;border-radius:14px}
+  .stage .sic svg{width:22px;height:22px}
+  .pipe::before{top:24px}
+  .stage small{display:none}
+  .hero-card .mini-truck{width:150px;opacity:.5}
+}
+.map-hint{display:none}
+@media (max-width:900px){.map-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.map-scroll svg{width:820px!important;max-width:none}.map-wrap{display:flex;flex-direction:column}.inset,.map-legend{position:static;max-width:none;margin:8px 8px 0;box-shadow:none}.map-legend{margin-bottom:8px}.map-hint{display:block;text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding-top:4px}}
+@media (max-width:520px){
+  .hero-card .mini-truck{display:none}
+  .prod .pr{flex-direction:column;align-items:flex-start;gap:8px}
+  .prod .art{height:110px}
+  .prod{padding:14px}
+  .g-4{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .kpi{padding:14px}
+  .kpi .kic{width:32px;height:32px;right:10px;top:10px}
+  .top p{display:none}
+  .stat-row{grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .stat-row div{padding:8px}
+  .stat-row b{font-size:13px}
+  .ticket b{font-size:28px}
+  .stage b{font-size:10.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* ============ KEYFRAMES ============ */
+@keyframes fadeOut{to{opacity:0}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes twinkle{from{opacity:.3}to{opacity:1}}
+@keyframes sunRise{from{transform:translateY(260px)}to{transform:translateY(0)}}
+@keyframes pulseGlow{50%{opacity:.55;transform:scale(1.06)}}
+@keyframes riseIn{from{transform:translateY(120px)}to{transform:none}}
+@keyframes drift{from{transform:translateX(-300px)}to{transform:translateX(1500px)}}
+@keyframes drive{from{transform:translateX(-520px)}to{transform:translateX(430px)}}
+@keyframes driveOff{from{transform:translateX(430px)}to{transform:translateX(1500px)}}
+@keyframes bob{to{transform:translateY(-3px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+@keyframes puff{0%{opacity:.7;transform:translate(0,0) scale(.4)}100%{opacity:0;transform:translate(-50px,-30px) scale(1.6)}}
+@keyframes emblemPop{from{opacity:0;transform:scale(.2) rotate(-90deg)}to{opacity:1;transform:none}}
+@keyframes letterIn{from{opacity:0;transform:translateY(40px) rotate(8deg) scale(.6)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes load{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes burst{0%{opacity:0;transform:translate(-50%,0) scale(.3) rotate(0)}12%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),var(--dy)) scale(1) rotate(var(--rot))}}
+@keyframes wipeIn{to{clip-path:circle(150% at 50% 50%)}}
+@keyframes wipeOut{from{clip-path:circle(150% at 50% 50%)}to{clip-path:circle(0% at 50% 50%)}}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes underline{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-16px) rotate(10deg)}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes tbob{50%{transform:translateY(-6px)}}
+@keyframes tjump{30%{transform:translateY(-24px) scale(1.04,.96)}60%{transform:translateY(0) scale(.96,1.04)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+@keyframes wave{0%,100%{transform:rotate(-125deg)}50%{transform:rotate(-155deg)}}
+@keyframes ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(3);opacity:0}}
+@keyframes ringSvg{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.4);opacity:0}}
+@keyframes pulseDot{50%{transform:scale(1.25)}}
+@keyframes truckIdle{50%{transform:translateY(-3px)}}
+@keyframes roadMove{to{background-position:-40px 0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes bump{50%{transform:scale(1.15)}}
+@keyframes beam{from{top:12%}to{top:86%}}
+@keyframes flow{to{background-position:20px 0}}
+@keyframes stagePulse{50%{transform:translateY(-4px)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(-20px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-14px)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes viewIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.view-in{animation:viewIn .6s var(--ease) both}
+</style>
+</head>
+<body>
+
+<!-- ================= GLOBAL DEFS ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gTomato" cx="38%" cy="32%" r="75%">
+      <stop offset="0" stop-color="#FF7A5C"/><stop offset=".55" stop-color="#E4513B"/><stop offset="1" stop-color="#B8301F"/>
+    </radialGradient>
+    <linearGradient id="gDawn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE3B0"/><stop offset="1" stop-color="#FFF6E4"/>
+    </linearGradient>
+    <linearGradient id="gRing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F4B740"/><stop offset="1" stop-color="#E4513B"/>
+    </linearGradient>
+    <clipPath id="cpLogo"><circle cx="32" cy="35" r="21"/></clipPath>
+    <!-- LOGO: tomat = bumi panen, di dalamnya fajar, ladang & jalan keliling -->
+    <symbol id="logo" viewBox="0 0 64 64">
+      <circle cx="32" cy="35" r="27" fill="url(#gTomato)"/>
+      <path d="M14 22a24 24 0 0 1 10-9" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <g clip-path="url(#cpLogo)">
+        <rect x="8" y="12" width="48" height="48" fill="url(#gDawn)"/>
+        <path d="M19 40a13 13 0 0 1 26 0z" fill="#F4B740"/>
+        <path d="M8 40h48v20H8z" fill="#3F8A4F"/>
+        <path d="M8 46c10-3 20-4 30-2" stroke="#5FA35A" stroke-width="2.4" fill="none"/>
+        <path d="M8 52c14-4 30-4 48-1" stroke="#5FA35A" stroke-width="2.4" fill="none"/>
+        <path d="M30 40c-2 6-8 12-18 20h12c4-7 7-14 8-20z" fill="#FBF6EC"/>
+        <path d="M29.6 44l-.8 3M27.5 51l-1.4 3" stroke="#E4513B" stroke-width="1.6" stroke-linecap="round"/>
+      </g>
+      <path d="M32 3c1.2 3 1.5 5 1 8l6-2.5-3.5 5.5 6.5 1.5-7 3H29l-7-3 6.5-1.5L25 8.5l6 2.5c-.5-3-.2-5 1-8z" fill="#3F8A4F"/>
+      <path d="M32 3c1.2 3 1.5 5 1 8" stroke="#2E6B4A" stroke-width="1.4" fill="none"/>
+    </symbol>
+    <!-- product icons -->
+    <symbol id="i-tomat" viewBox="0 0 48 48"><circle cx="24" cy="27" r="16" fill="url(#gTomato)"/><ellipse cx="18" cy="21" rx="4" ry="6" fill="#fff" opacity=".35"/><path d="M24 9l2.5 4.5 5-1.5-3 4.2 4.5 2.3-6 .3L24 22l-3-3.2-6-.3 4.5-2.3-3-4.2 5 1.5z" fill="#3F8A4F"/></symbol>
+    <symbol id="i-cabai" viewBox="0 0 48 48"><path d="M12 14c4 0 6 2 7 6 3 10 8 17 20 20-6 3-17 2-23-5-5-6-6-14-4-21z" fill="#C7362B"/><path d="M16 22c1 7 4 11 9 14" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M12 14c-1-3 0-6 3-8M12 14c2-1 5-1 7 1" stroke="#3F8A4F" stroke-width="3.2" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-durian" viewBox="0 0 48 48"><ellipse cx="24" cy="27" rx="15" ry="16" fill="#9DB64A"/><g fill="#7C9435"><path d="M14 18l-3-3 4 1zM24 11l0-4 2 4zM34 18l3-3-4 1zM11 28l-4 0 4 2zM37 28l4 0-4 2zM16 39l-2 3 4-2zM32 39l2 3-4-2z"/></g><g fill="#B9CF63"><circle cx="19" cy="22" r="1.6"/><circle cx="27" cy="20" r="1.6"/><circle cx="31" cy="27" r="1.6"/><circle cx="23" cy="29" r="1.6"/><circle cx="17" cy="31" r="1.6"/><circle cx="27" cy="35" r="1.6"/></g><path d="M24 11c0-3 1-5 3-6" stroke="#6B5A2E" stroke-width="2.4" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="i-jar" viewBox="0 0 96 96"><rect x="26" y="14" width="44" height="12" rx="4" fill="#2E6B4A"/><path d="M22 30c0-3 2-5 5-5h42c3 0 5 2 5 5v46c0 6-4 10-10 10H32c-6 0-10-4-10-10z" fill="#E4513B"/><path d="M22 52c10-5 20 5 26 0s16-5 26 0v24c0 6-4 10-10 10H32c-6 0-10-4-10-10z" fill="#C7362B"/><rect x="30" y="38" width="36" height="22" rx="5" fill="#FBF6EC"/><use href="#logo" x="33" y="40" width="18" height="18"/><rect x="53" y="44" width="10" height="3" rx="1.5" fill="#E4513B"/><rect x="53" y="50" width="8" height="3" rx="1.5" fill="#3F8A4F"/><path d="M30 32c0 10 0 30 2 44" stroke="#fff" stroke-opacity=".35" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="i-pouch" viewBox="0 0 96 96"><path d="M24 18h48l-2 8 4 54c0 4-3 6-6 6H28c-3 0-6-2-6-6l4-54z" fill="#F6EFDF" stroke="#D8CBB0" stroke-width="2"/><path d="M24 18h48l-1 6H25z" fill="#C7362B"/><g transform="translate(26 30) scale(.92)"><use href="#i-cabai" width="48" height="48"/></g><rect x="30" y="72" width="36" height="6" rx="3" fill="#E4513B"/></symbol>
+    <symbol id="i-box" viewBox="0 0 96 96"><path d="M14 34l34-14 34 14v36L48 86 14 70z" fill="#DDEBF2"/><path d="M14 34l34 14 34-14M48 48v38" stroke="#A9C6D6" stroke-width="2.5" fill="none"/><path d="M14 34l34-14 34 14-34 14z" fill="#EEF6FA"/><g transform="translate(46 44) scale(.7)"><use href="#i-durian" width="48" height="48"/></g><path d="M22 52l6 2M22 58l6 2M22 64l6 2" stroke="#7FB2CF" stroke-width="2.5" stroke-linecap="round"/><path d="M30 30l4-8 4 8M26 26h16" stroke="#7FB2CF" stroke-width="2" stroke-linecap="round" fill="none" opacity=".8"/></symbol>
+    <symbol id="i-jerigen" viewBox="0 0 96 96"><path d="M28 22h26l14 12v44c0 4-3 8-8 8H30c-4 0-8-4-8-8V30c0-4 3-8 6-8z" fill="#E4513B"/><rect x="34" y="12" width="14" height="10" rx="3" fill="#2E6B4A"/><path d="M58 26c8 0 12 6 12 12" stroke="#B8301F" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="30" y="42" width="30" height="24" rx="5" fill="#FBF6EC"/><text x="45" y="59" text-anchor="middle" font-size="13" font-weight="800" fill="#C7362B" font-family="Plus Jakarta Sans,sans-serif">5 kg</text></symbol>
+    <symbol id="i-kompos" viewBox="0 0 48 48"><path d="M8 26h32l-3 16H11z" fill="#8A6A45"/><path d="M8 26c2-5 6-7 10-6 2-4 8-5 11-2 4-1 9 2 11 8z" fill="#6E5236"/><path d="M24 20c0-6 3-10 9-12-1 6-4 10-9 12zM24 20c-1-5-4-8-9-9 1 5 4 8 9 9z" fill="#5FA35A"/></symbol>
+  </defs>
+</svg>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" class="screen active" aria-label="Pembuka">
+  <svg class="scene" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="skyDawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7B267"/><stop offset=".55" stop-color="#FCD9A4"/><stop offset="1" stop-color="#FFF2DC"/></linearGradient>
+      <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1E2D"/><stop offset="1" stop-color="#24485A"/></linearGradient>
+      <radialGradient id="sunGlow"><stop offset="0" stop-color="#FFE7A8" stop-opacity=".9"/><stop offset="1" stop-color="#FFE7A8" stop-opacity="0"/></radialGradient>
+      <pattern id="rows" width="60" height="18" patternUnits="userSpaceOnUse"><path d="M0 9c15-5 30-5 60 0" stroke="#3F8A4F" stroke-width="5" fill="none"/></pattern>
+    </defs>
+    <rect width="1200" height="700" fill="url(#skyDawn)"/>
+    <rect class="night" width="1200" height="700" fill="url(#skyNight)"/>
+    <g class="stars" fill="#fff">
+      <circle cx="120" cy="80" r="2"/><circle cx="260" cy="150" r="1.5"/><circle cx="380" cy="60" r="2.2"/><circle cx="520" cy="120" r="1.4"/><circle cx="700" cy="70" r="2"/><circle cx="820" cy="160" r="1.6"/><circle cx="960" cy="90" r="2.2"/><circle cx="1080" cy="140" r="1.5"/><circle cx="640" cy="200" r="1.3"/><circle cx="200" cy="230" r="1.4"/><circle cx="1010" cy="240" r="1.2"/>
+    </g>
+    <g class="sun-g">
+      <circle class="sun-glow" cx="600" cy="420" r="220" fill="url(#sunGlow)" style="transform-box:fill-box;transform-origin:center"/>
+      <circle cx="600" cy="420" r="96" fill="#F4B740"/>
+      <circle cx="600" cy="420" r="96" fill="#FFD36E" opacity=".5" transform="translate(-14 -14) scale(1)" style="transform-box:fill-box;transform-origin:center"/>
+    </g>
+    <g class="cloud" opacity=".85"><path d="M0 170c10-20 40-24 56-10 8-18 40-22 54 0 22-4 34 10 30 24H4c-10 0-12-8-4-14z" fill="#FFF6E6"/></g>
+    <g class="cloud c2" opacity=".7"><path d="M0 110c10-16 34-20 48-8 8-14 34-16 46 0 18-2 28 8 24 20H4c-8 0-10-6-4-12z" fill="#FFF6E6"/></g>
+    <path class="hill-far" d="M0 470C140 400 260 420 380 440S620 380 760 410 1000 450 1200 400V700H0z" fill="#8DBB7A"/>
+    <path class="hill-mid" d="M0 520C160 470 300 500 460 490S760 450 900 480 1100 500 1200 470V700H0z" fill="#5FA35A"/>
+    <path d="M0 560C200 540 420 548 600 545S1000 540 1200 552V700H0z" fill="#3F8A4F"/>
+    <path d="M0 560C200 540 420 548 600 545S1000 540 1200 552V610H0z" fill="url(#rows)" opacity=".7"/>
+    <!-- trees -->
+    <g fill="#2E6B4A"><circle cx="140" cy="520" r="22"/><rect x="137" y="530" width="6" height="26" fill="#5B4632"/><circle cx="1050" cy="505" r="26"/><rect x="1047" y="518" width="6" height="30" fill="#5B4632"/><circle cx="1090" cy="520" r="16"/></g>
+    <rect y="606" width="1200" height="94" fill="#C9A77A"/>
+    <rect y="606" width="1200" height="8" fill="#B08D60"/>
+    <path d="M0 655h1200" stroke="#FBF0DC" stroke-width="5" stroke-dasharray="40 34"/>
+    <!-- TRUCK -->
+    <g id="truck" class="truck-move">
+      <g transform="translate(0 452)">
+        <g class="smoke" fill="#E9E1D0"><circle class="puff" cx="-6" cy="122" r="12"/><circle class="puff" cx="-6" cy="122" r="12"/><circle class="puff" cx="-6" cy="122" r="12"/></g>
+        <g class="truck-bob">
+          <rect x="0" y="0" width="230" height="120" rx="12" fill="#FBF6EC"/>
+          <rect x="0" y="0" width="230" height="120" rx="12" fill="none" stroke="#E2D6BF" stroke-width="3"/>
+          <rect x="0" y="92" width="230" height="14" fill="#E4513B"/>
+          <rect x="0" y="106" width="230" height="6" fill="#3F8A4F"/>
+          <use href="#logo" x="16" y="16" width="64" height="64"/>
+          <text x="92" y="44" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22" fill="#1F4D36">MUSIM</text>
+          <text x="92" y="68" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22" fill="#1F4D36">PANJANG</text>
+          <text x="93" y="84" font-family="Plus Jakarta Sans,sans-serif" font-weight="700" font-size="8.5" letter-spacing="1.6" fill="#E4513B">UNIT OLAH KELILING</text>
+          <path d="M232 34h46c8 0 14 4 18 11l18 30c2 4 3 8 3 12v28c0 5-4 9-9 9h-76z" fill="#E4513B"/>
+          <path d="M244 44h32c4 0 7 2 9 5l13 22h-54z" fill="#CFE6F1"/>
+          <path d="M250 48l8 0-10 22h-4z" fill="#fff" opacity=".6"/>
+          <rect x="300" y="96" width="18" height="10" rx="3" fill="#F4B740"/>
+          <rect x="232" y="88" width="22" height="4" rx="2" fill="#B8301F"/>
+          <rect x="-4" y="112" width="326" height="10" rx="5" fill="#2D3A31"/>
+        </g>
+        <g class="wheel"><circle cx="60" cy="132" r="26" fill="#22302A"/><circle cx="60" cy="132" r="12" fill="#C9C2B2"/><path d="M60 110v44M38 132h44" stroke="#22302A" stroke-width="4"/></g>
+        <g class="wheel"><circle cx="262" cy="132" r="26" fill="#22302A"/><circle cx="262" cy="132" r="12" fill="#C9C2B2"/><path d="M262 110v44M240 132h44" stroke="#22302A" stroke-width="4"/></g>
+      </g>
+    </g>
+  </svg>
+  <div class="intro-brand">
+    <svg class="intro-emblem" viewBox="0 0 64 64" aria-hidden="true"><use href="#logo"/></svg>
+    <div class="intro-title" id="introTitle" aria-label="MUSIM PANJANG"></div>
+    <div class="intro-sub">Unit Olah Keliling</div>
+    <p class="intro-tag">Kelebihan panen hari ini, <b>bahan baku sepanjang tahun.</b></p>
+  </div>
+  <div class="loader" aria-hidden="true"><i></i></div>
+  <button class="skip" id="skipBtn">Lewati ›</button>
+</section>
+
+<!-- ================= LOGIN ================= -->
+<section id="login" class="screen" aria-label="Masuk">
+  <div class="login-wrap">
+    <aside class="login-hero">
+      <div class="brand-row">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#logo"/></svg>
+        <div class="brand-name">MUSIM PANJANG<small>Unit Olah Keliling</small></div>
+      </div>
+      <div class="hero-center">
+        <div class="hero-mascot">
+          <div id="loginMascot"></div>
+          <div class="bubble" id="bubble">Halo! Aku <b>Tomi</b>. Pilih peranmu dulu, ya.</div>
+        </div>
+        <h2 class="hero-h">Unit olah yang datang <em>saat harga jatuh.</em></h2>
+        <p class="hero-p">Radar Harga membaca sentra yang kelebihan pasok, unit olah datang, membeli dengan harga lantai, lalu mengubah panen menjadi puree tomat, cabai kering, dan durian beku untuk usaha makanan.</p>
+        <div class="chips">
+          <div class="chip">🍅 Harga lantai <b>Rp2.500/kg</b></div>
+          <div class="chip">⚙️ Kapasitas <b>±2 ton/hari</b></div>
+          <div class="chip">💸 Bayar <b>hari yang sama</b></div>
+        </div>
+      </div>
+      <div class="hero-foot">Prototype BMC Competition 2026 · HIMASETA Universitas Bengkulu · Agridigital Preneur</div>
+    </aside>
+    <main class="login-panel">
+      <div class="eyebrow">Selamat datang</div>
+      <h1 class="panel-h">Masuk sebagai siapa?</h1>
+      <p class="panel-p">Setiap peran punya dasbor sendiri. Pilih salah satu, data demo terisi otomatis.</p>
+      <div class="roles" id="roles" role="radiogroup" aria-label="Pilih peran"></div>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="user">Nama pengguna / No. HP</label>
+          <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+          <input class="input" id="user" autocomplete="username" placeholder="mis. asep.cianjur">
+        </div>
+        <div class="field">
+          <label for="pass">Kata sandi</label>
+          <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <input class="input" id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
+          <button type="button" class="eye" id="eyeBtn" aria-label="Tampilkan kata sandi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <div class="row-between">
+          <label class="check-l"><input type="checkbox" checked> Ingat saya</label>
+          <a href="#" class="link" onclick="toast('Tautan atur ulang dikirim lewat WhatsApp (demo)');return false">Lupa sandi?</a>
+        </div>
+        <button class="btn btn-primary btn-block" id="loginBtn" type="submit"><span class="spin"></span><span class="lbl">Masuk</span></button>
+        <div class="demo-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8h.01M11 12h1v5h1"/></svg><span>Mode prototype: kredensial demo sudah terisi. Tekan <b>Masuk</b> untuk melihat dasbor peran yang dipilih.</span></div>
+      </form>
+    </main>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<section id="app" class="screen" aria-label="Dasbor">
+  <aside class="side">
+    <div class="brand-row">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#logo"/></svg>
+      <div class="brand-name">MUSIM PANJANG<small>Unit Olah Keliling</small></div>
+    </div>
+    <div class="who"><div class="ava" id="sAva">PA</div><div><b id="sName">—</b><small id="sRole">—</small></div></div>
+    <nav class="nav" id="sNav"></nav>
+    <div class="spacer"></div>
+    <div class="side-card" id="sCard"></div>
+    <button class="logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg>Keluar</button>
+  </aside>
+  <div class="main">
+    <header class="top" id="top">
+      <svg class="mlogo" viewBox="0 0 64 64" aria-hidden="true"><use href="#logo"/></svg>
+      <div class="grow"><h1 id="greet">Halo</h1><p id="today">—</p></div>
+      <button class="icon-btn" aria-label="Notifikasi" onclick="notif()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21a2 2 0 0 0 4 0"/></svg><span class="dot"></span></button>
+      <button class="icon-btn m-logout" aria-label="Keluar" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg></button>
+    </header>
+    <div class="view" id="view"></div>
+  </div>
+  <nav class="bnav" id="bNav"></nav>
+  <button class="fab-cart" id="fabCart" onclick="jump('keranjang')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.5 11h11L21 8H6.5"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>Keranjang <span class="n" id="fabN">0</span></button>
+  <div class="helper"><div class="tip hide" id="tip"></div><div id="helperMascot"></div></div>
+</section>
+
+<div class="wipe" id="wipe"><svg viewBox="0 0 64 64"><use href="#logo"/></svg></div>
+<div class="toasts" id="toasts"></div>
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+
+<script>
+/* =========================================================
+   MUSIM PANJANG — prototype interaktif (data demo)
+   ========================================================= */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const rp = n => 'Rp' + Math.round(n).toLocaleString('id-ID');
+const fmt = (n, d=0) => n.toLocaleString('id-ID', {minimumFractionDigits:d, maximumFractionDigits:d});
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- ICONS ---------- */
+const I = {
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  scale:'<path d="M12 3v18M5 7h14M7 7l-3 7a3 3 0 0 0 6 0zM17 7l-3 7a3 3 0 0 0 6 0zM8 21h8"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  leaf:'<path d="M5 19c0-9 6-15 15-15 0 9-6 15-15 15zM5 19l8-8"/>',
+  shop:'<path d="M4 7h16l-1 13H5zM8 7a4 4 0 0 1 8 0"/>',
+  cart:'<path d="M3 4h2l2.5 11h11L21 8H6.5"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/>',
+  box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10"/>',
+  qr:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  flow:'<path d="M4 6h6v4H4zM14 14h6v4h-6zM7 10v4a2 2 0 0 0 2 2h5M17 14v-4a2 2 0 0 0-2-2h-5"/>',
+  radar:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6-6"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
+  map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/>',
+  truck:'<path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z"/><circle cx="6" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 4 6 4 9s-1 6-4 9c-3-3-4-6-4-9s1-6 4-9z"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c1-4 4-6 7-6s6 2 7 6M16 4a3.5 3.5 0 0 1 0 7M18 14c2 1 3.5 3 4 6"/>',
+  wallet:'<rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2"/>',
+  check:'<path d="M5 12l5 5 9-10"/>',
+  bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  drop:'<path d="M12 3s7 7 7 12a7 7 0 0 1-14 0c0-5 7-12 7-12z"/>',
+  fire:'<path d="M12 3c1 4 5 6 5 11a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-6 0-9z"/>',
+  wash:'<path d="M4 8h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 8l2-4h12l2 4"/><path d="M8 14c1.3-1 2.7-1 4 0s2.7 1 4 0"/>',
+  pot:'<path d="M4 10h16v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM2 10h20M9 3c0 2 1 2 1 4M14 3c0 2 1 2 1 4"/>',
+  sunny:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+  pkg:'<path d="M4 8l8-4 8 4v8l-8 4-8-4zM12 12l8-4M12 12v8M12 12L4 8"/>',
+  pin:'<path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>',
+  dl:'<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'
+};
+const ic = (n, s='') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${s}>${I[n]||''}</svg>`;
+
+/* ---------- MASCOT: TOMI si Tomat Bercaping ---------- */
+function tomiSVG(cls=''){
+  return `<svg class="tomi ${cls}" viewBox="0 0 200 232" role="img" aria-label="Tomi, maskot MUSIM PANJANG">
+  <ellipse cx="100" cy="224" rx="52" ry="7" fill="#000" opacity=".13"/>
+  <g class="t-bob">
+    <rect x="74" y="196" width="20" height="24" rx="9" fill="#2E6B4A"/><rect x="106" y="196" width="20" height="24" rx="9" fill="#2E6B4A"/>
+    <rect x="70" y="212" width="27" height="10" rx="5" fill="#1F4D36"/><rect x="103" y="212" width="27" height="10" rx="5" fill="#1F4D36"/>
+    <path d="M100 64c50 0 76 36 74 78-2 44-34 66-74 66s-72-22-74-66c-2-42 24-78 74-78z" fill="url(#gTomato)"/>
+    <path d="M60 88c-6 20-6 50 4 72M140 88c6 20 6 50-4 72" stroke="#B8301F" stroke-opacity=".35" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="62" cy="108" rx="11" ry="20" fill="#fff" opacity=".32" transform="rotate(20 62 108)"/>
+    <ellipse cx="60" cy="154" rx="12" ry="7" fill="#FF9B8A" opacity=".8"/><ellipse cx="140" cy="154" rx="12" ry="7" fill="#FF9B8A" opacity=".8"/>
+    <path d="M68 112q10-7 20 0M112 112q10-7 20 0" stroke="#5A1A12" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <g class="t-eye"><ellipse cx="80" cy="132" rx="12" ry="14" fill="#fff"/></g>
+    <g class="t-eye"><ellipse cx="120" cy="132" rx="12" ry="14" fill="#fff"/></g>
+    <g class="t-pupils"><circle cx="81" cy="134" r="6.5" fill="#1E2A22"/><circle cx="121" cy="134" r="6.5" fill="#1E2A22"/><circle cx="83.5" cy="131" r="2.2" fill="#fff"/><circle cx="123.5" cy="131" r="2.2" fill="#fff"/></g>
+    <path class="m-smile" d="M86 158q14 14 28 0" stroke="#5A1A12" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <g class="m-open"><path d="M84 156q16 22 32 0z" fill="#7A1F18"/><path d="M92 166q8 5 16 0" stroke="#FF7A7A" stroke-width="4" stroke-linecap="round"/></g>
+    <g class="t-hat">
+      <path d="M22 82Q100 18 178 82Q100 98 22 82z" fill="#EBC97F"/>
+      <path d="M22 82Q100 98 178 82" stroke="#C9A257" stroke-width="3" fill="none"/>
+      <path d="M100 38L60 86M100 38L80 90M100 38L120 90M100 38L140 86M100 38L44 84M100 38L156 84" stroke="#D4AE62" stroke-width="2"/>
+      <path d="M50 74Q100 62 150 74" stroke="#C7362B" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M100 40c-6-12 0-24 14-28-1 12-6 22-14 28z" fill="#5FA35A"/>
+      <path d="M100 40c-2-10-10-16-20-16 2 9 9 15 20 16z" fill="#3F8A4F"/>
+    </g>
+    <g class="t-arm t-arm-l"><path d="M50 138v36" stroke="#C93A2A" stroke-width="11" stroke-linecap="round"/><circle cx="50" cy="180" r="12" fill="#5FA35A"/><circle cx="46" cy="176" r="3" fill="#fff" opacity=".35"/></g>
+    <g class="t-arm t-arm-r"><path d="M150 138v36" stroke="#C93A2A" stroke-width="11" stroke-linecap="round"/><circle cx="150" cy="180" r="12" fill="#5FA35A"/><circle cx="146" cy="176" r="3" fill="#fff" opacity=".35"/></g>
+  </g></svg>`;
+}
+
+/* ---------- ROLES ---------- */
+const ROLES = {
+  petani:{label:'Petani / Penjual Panen', short:'Petani', desc:'Setor panen, harga lantai, bayar hari itu', color:'#5FA35A', icon:'leaf',
+    name:'Pak Asep', ava:'AS', sub:'Petani tomat · Cianjur', user:'asep.cianjur',
+    bubble:'Panen lagi melimpah? Unit olah sudah di Cianjur, Pak!',
+    nav:[['beranda','Beranda','home'],['setor','Setor','scale'],['riwayat','Riwayat','clock'],['kompos','Kompos','leaf']],
+    card:'<b>Siaga Serap aktif</b>Unit MP-01 buka di Desa Sukaresmi sampai 24 Nov.',
+    tips:['Grade A tetap jual ke pasar segar, ya. Unit hanya menyerap grade B/C dan kelebihan.','Harga lantai diumumkan sebelum unit tiba, jadi Bapak bisa hitung dulu.','Pembayaran masuk di hari yang sama setelah timbang.']},
+  pembeli:{label:'Pembeli UMKM & Resto', short:'Pembeli', desc:'Belanja bahan olahan, langganan, lacak QR', color:'#E4513B', icon:'shop',
+    name:'Bu Wati', ava:'WT', sub:'UMKM sambal botol · Bandung', user:'sambal.buwati',
+    bubble:'Bahan sambal stabil sepanjang tahun? Yuk belanja, Bu!',
+    nav:[['katalog','Katalog','shop'],['keranjang','Keranjang','cart'],['pesanan','Pesanan','box'],['lacak','Lacak QR','qr']],
+    card:'<b>Harga terkunci</b>Langganan bulanan: harga dikunci per kuartal.',
+    tips:['Aktifkan langganan bulanan supaya harga dikunci per kuartal.','Setiap kemasan punya QR asal: sentra, tanggal, komoditas.','Ada garansi ganti untuk produk cacat.']},
+  kru:{label:'Kru Unit Olah', short:'Kru', desc:'Timbang, olah, kemas & cetak QR batch', color:'#F08A3C', icon:'truck',
+    name:'Mas Dimas', ava:'DM', sub:'Kepala kru · Unit MP-01', user:'kru.mp01',
+    bubble:'Unit siap beroperasi! Antrean timbang sudah menunggu.',
+    nav:[['operasi','Operasi','gear'],['antrean','Antrean','list'],['produksi','Produksi','flow'],['batch','Batch QR','qr']],
+    card:'<b>Unit MP-01</b>Lokasi: Sukaresmi, Cianjur · hari ke-5 dari 14.',
+    tips:['Timbang dan catat grade sebelum masuk pencucian.','Jaga suhu pengering kabinet stabil agar mutu cabai seragam.','Sisa kulit, biji, dan tangkai masuk ke pengomposan.']},
+  admin:{label:'Admin Radar Harga', short:'Radar', desc:'Pantau sentra, tetapkan Siaga Serap, kirim unit', color:'#2E6B4A', icon:'radar',
+    name:'Tim Radar', ava:'TR', sub:'Operator Radar Harga', user:'radar.admin',
+    bubble:'Radar menyala! Ada 3 sentra berstatus Siaga Serap.',
+    nav:[['radar','Peta','map'],['sentra','Sentra','list'],['armada','Armada','truck']],
+    card:'<b>Aturan Siaga Serap</b>Harga produsen jauh di bawah rata-ratanya dan di bawah biaya produksi.',
+    tips:['Ketuk titik di peta untuk melihat detail sentra.','Unit hanya berangkat bila volume dikonfirmasi ketua kelompok dan ada pesanan B2B.','Riwayat data harga–serapan per sentra adalah aset yang sulit ditiru.']},
+  pemda:{label:'Pemda / Dinas', short:'Pemda', desc:'Laporan serapan & dampak di wilayah', color:'#3E6FA3', icon:'globe',
+    name:'Dinas Pertanian', ava:'DP', sub:'Mitra data & penyerapan', user:'distan.jabar',
+    bubble:'Lihat berapa panen petani yang terselamatkan bulan ini.',
+    nav:[['ringkasan','Ringkasan','chart'],['serapan','Serapan','scale'],['dampak','Dampak','leaf']],
+    card:'<b>Mitra penyerapan</b>Kelebihan panen terserap tanpa anggaran darurat.',
+    tips:['Laporan serapan bisa diunduh untuk perencanaan.','Data mikro transaksi tercatat per sentra dan per petani.']}
+};
+
+/* ---------- DEMO DATA ---------- */
+const SENTRA = [
+  {id:'cjr',name:'Cianjur',prov:'Jawa Barat',kom:'Tomat',now:1400,avg:9800,status:'siaga',vol:'±38 ton grade B/C',kel:'Kel. Tani Mekar Sari',b2b:'6,2 ton puree',lon:107.14,lat:-6.82,lp:'l'},
+  {id:'lmb',name:'Lembang',prov:'Jawa Barat',kom:'Tomat',now:7800,avg:9500,status:'normal',vol:'—',kel:'Kel. Tani Sauyunan',b2b:'—',lon:107.62,lat:-6.81},
+  {id:'grt',name:'Garut',prov:'Jawa Barat',kom:'Cabai merah keriting',now:14000,avg:30000,status:'waspada',vol:'±12 ton (cek ulang)',kel:'Gapoktan Cikajang',b2b:'1,1 ton cabai kering',lon:107.9,lat:-7.22},
+  {id:'mgl',name:'Magelang',prov:'Jawa Tengah',kom:'Cabai merah keriting',now:3000,avg:27000,status:'siaga',vol:'±21 ton grade B/C',kel:'Kel. Tani Ngablak',b2b:'2,4 ton cabai kering',lon:110.22,lat:-7.47,lp:'l'},
+  {id:'tmg',name:'Temanggung',prov:'Jawa Tengah',kom:'Cabai merah keriting',now:24000,avg:26000,status:'normal',vol:'—',kel:'—',b2b:'—',lon:110.17,lat:-7.3},
+  {id:'byl',name:'Boyolali',prov:'Jawa Tengah',kom:'Tomat',now:4200,avg:8800,status:'waspada',vol:'±9 ton',kel:'Kel. Tani Selo',b2b:'—',lon:110.6,lat:-7.53,lp:'r'},
+  {id:'btu',name:'Batu',prov:'Jawa Timur',kom:'Tomat',now:6000,avg:8000,status:'normal',vol:'—',kel:'—',b2b:'—',lon:112.52,lat:-7.87},
+  {id:'sbd',name:'Situbondo',prov:'Jawa Timur',kom:'Tomat',now:1000,avg:7500,status:'siaga',vol:'±17 ton',kel:'Kel. Tani Besuki',b2b:'menunggu pesanan',lon:114.0,lat:-7.71},
+];
+const KEPAHIANG = {id:'kph',name:'Kepahiang',prov:'Bengkulu',kom:'Durian',now:9000,avg:22000,status:'waspada',vol:'musim Des–Feb',kel:'Kel. Tani Durian Kaba',b2b:'0,4 ton durian beku',off:true};
+const STATUS = {siaga:['Siaga Serap','b-siaga','#E4513B'],waspada:['Waspada','b-waspada','#E5A31B'],normal:['Normal','b-normal','#5FA35A'],menuju:['Unit menuju','b-menuju','#3E6FA3']};
+
+const PRODUCTS = [
+  {id:'puree1',name:'Puree Tomat Kental',size:'Pouch 1 kg',price:20000,unit:'pouch',art:'i-jar',bg:'#FDE7E1',desc:'Tomat sentra Jawa Barat, dimasak di ketel, untuk sambal, saus, dan masakan.'},
+  {id:'puree5',name:'Puree Tomat Kental',size:'Jeriken 5 kg',price:100000,unit:'jeriken',art:'i-jerigen',bg:'#FBE3DC',desc:'Ukuran dapur resto & katering. Hemat kemasan.'},
+  {id:'cabai',name:'Cabai Kering',size:'Per kg',price:75000,unit:'kg',art:'i-pouch',bg:'#FCEBD9',desc:'Dikeringkan di pengering kabinet higienis, warna & mutu seragam.'},
+  {id:'durian',name:'Daging Durian Beku',size:'Per kg',price:100000,unit:'kg',art:'i-box',bg:'#E6F1F5',desc:'Lini musiman untuk bakery dan kafe. Beku setelah dikupas di sentra.',tag:'Musiman'}
+];
+
+/* ---------- STATE ---------- */
+let ROLE = 'petani';
+const S = {
+  cart:{puree1:10, cabai:2},
+  sub:true,
+  setor:{kom:'tomat', grade:'B', kg:320},
+  riwayat:[
+    {d:'14 Nov',kom:'tomat',kg:280,g:'B',v:700000},
+    {d:'12 Nov',kom:'tomat',kg:410,g:'C',v:1025000},
+    {d:'10 Nov',kom:'tomat',kg:190,g:'B',v:475000},
+  ],
+  queue:[
+    {n:'Kel. Tani Mekar Sari',kg:900,kom:'Tomat',g:'B',st:'antre'},
+    {n:'Pak Asep',kg:320,kom:'Tomat',g:'B',st:'antre'},
+    {n:'Bu Euis',kg:180,kom:'Tomat',g:'C',st:'antre'},
+    {n:'Pak Dede',kg:450,kom:'Tomat',g:'B',st:'antre'},
+    {n:'Pak Ujang',kg:260,kom:'Tomat',g:'C',st:'antre'},
+  ],
+  processed:1080,
+  batches:[{code:'MP01-CJR-1114-07',prod:'Puree tomat · 96 pouch',t:'14 Nov, 15.20'}],
+  unitAt:'cjr', selSentra:'cjr', moving:false
+};
+
+/* ---------- UTIL UI ---------- */
+function toast(msg, icon='check'){
+  const t = document.createElement('div'); t.className='toast';
+  t.innerHTML = ic(icon) + '<span>'+msg+'</span>';
+  $('#toasts').appendChild(t);
+  setTimeout(()=>{t.classList.add('out'); setTimeout(()=>t.remove(),300)}, 2600);
+}
+function modal(html){ $('#modal').innerHTML = html; $('#modalBg').classList.add('show'); }
+function closeModal(){ $('#modalBg').classList.remove('show'); }
+function confetti(n=60){
+  if(reduce) return;
+  const cols=['#E4513B','#F4B740','#5FA35A','#FBF6EC','#C7362B','#3E6FA3'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('i'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=cols[i%cols.length];
+    c.style.animationDuration=(1.8+Math.random()*1.8)+'s'; c.style.animationDelay=(Math.random()*.4)+'s';
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c); setTimeout(()=>c.remove(),4200);
+  }
+}
+function fakeQR(seed=7, size=21){
+  let s = seed; const rnd=()=>{s=(s*9301+49297)%233280; return s/233280};
+  let r=''; const cell=4;
+  const finder=(x,y)=>`<rect x="${x*cell}" y="${y*cell}" width="${7*cell}" height="${7*cell}" fill="#1E2A22"/><rect x="${(x+1)*cell}" y="${(y+1)*cell}" width="${5*cell}" height="${5*cell}" fill="#fff"/><rect x="${(x+2)*cell}" y="${(y+2)*cell}" width="${3*cell}" height="${3*cell}" fill="#1E2A22"/>`;
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+    const inF=(x<8&&y<8)||(x>size-9&&y<8)||(x<8&&y>size-9); if(inF) continue;
+    if(rnd()>.52) r+=`<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}" fill="#1E2A22"/>`;
+  }
+  const W=size*cell;
+  return `<svg viewBox="-4 -4 ${W+8} ${W+8}" class="qrsvg"><rect x="-4" y="-4" width="${W+8}" height="${W+8}" fill="#fff" rx="6"/>${r}${finder(0,0)}${finder(size-7,0)}${finder(0,size-7)}<rect x="${W/2-10}" y="${W/2-10}" width="20" height="20" fill="#fff"/><use href="#logo" x="${W/2-9}" y="${W/2-9}" width="18" height="18"/></svg>`;
+}
+function linePath(data,w,h,min,max,pad=6){
+  const n=data.length; const sx=i=>pad+i*(w-pad*2)/(n-1); const sy=v=>h-pad-(v-min)/(max-min)*(h-pad*2);
+  let d=''; data.forEach((v,i)=>{ d+=(i?'L':'M')+sx(i).toFixed(1)+' '+sy(v).toFixed(1)}); return {d, sx, sy};
+}
+function countUp(el){
+  const to=parseFloat(el.dataset.to), dec=+(el.dataset.dec||0), pre=el.dataset.pre||'', suf=el.dataset.suf||'';
+  if(reduce){ el.textContent=pre+fmt(to,dec)+suf; return; }
+  const t0=performance.now(), dur=1200;
+  const step=t=>{const p=Math.min(1,(t-t0)/dur); const e=1-Math.pow(1-p,3); el.textContent=pre+fmt(to*e,dec)+suf; if(p<1) requestAnimationFrame(step)};
+  requestAnimationFrame(step);
+}
+let io;
+function observe(){
+  io && io.disconnect();
+  io = new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target; el.classList.add('in');
+      $$('[data-to]',el).forEach(countUp);
+      $$('[data-w]',el).forEach(b=>b.style.width=b.dataset.w);
+      $$('[data-h]',el).forEach(b=>b.style.height=b.dataset.h);
+      io.unobserve(el);
+    }
+  }),{threshold:.12});
+  $$('.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i%4*70)+'ms'; io.observe(el); });
+}
+
+/* ---------- INTRO ---------- */
+(function intro(){
+  const title='MUSIM PANJANG';
+  $('#introTitle').innerHTML = [...title].map((c,i)=> c===' ' ? '<span>&nbsp;</span>' : `<span style="animation-delay:${3.3+i*0.06}s">${c}</span>`).join('');
+  const truck=$('#truck');
+  const T = reduce ? 600 : 6300;
+  setTimeout(()=>truck.classList.add('parked'), 3300);
+  setTimeout(()=>truck.classList.remove('parked'), 5000);
+  setTimeout(burst, 3250);
+  const tm = setTimeout(()=>go('login'), T);
+  $('#skipBtn').onclick = ()=>{ clearTimeout(tm); go('login'); };
+})();
+function burst(){
+  if(reduce) return;
+  const items=['i-tomat','i-cabai','i-durian','i-tomat','i-kompos','i-cabai'];
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div'); p.className='particle';
+    const a=(Math.PI*2)*(i/18)+Math.random()*.3, d=120+Math.random()*160;
+    p.style.setProperty('--dx',Math.cos(a)*d+'px'); p.style.setProperty('--dy',Math.sin(a)*d*.7+40+'px');
+    p.style.setProperty('--rot',(Math.random()*540-270)+'deg');
+    p.style.width=p.style.height=(22+Math.random()*18)+'px';
+    p.innerHTML=`<svg viewBox="0 0 48 48"><use href="#${items[i%items.length]}"/></svg>`;
+    $('#intro').appendChild(p); setTimeout(()=>p.remove(),2000);
+  }
+}
+let current='intro';
+function go(id, after){
+  if(current===id) return;
+  const w=$('#wipe'); w.classList.remove('out'); w.classList.add('go');
+  setTimeout(()=>{
+    $$('.screen').forEach(s=>s.classList.remove('active'));
+    $('#'+id).classList.add('active'); current=id; window.scrollTo(0,0); $('#login').scrollTop=0;
+    after && after();
+    w.classList.remove('go'); w.classList.add('out');
+    setTimeout(()=>w.classList.remove('out'),720);
+  }, reduce?10:600);
+}
+
+/* ---------- LOGIN ---------- */
+$('#loginMascot').innerHTML = tomiSVG('wave');
+const mascot = ()=>$('#loginMascot .tomi');
+function renderRoles(){
+  $('#roles').innerHTML = Object.entries(ROLES).map(([k,r],i)=>`
+    <button type="button" class="role ${k===ROLE?'sel':''}" data-role="${k}" role="radio" aria-checked="${k===ROLE}" style="--c:${r.color};animation-delay:${.08*i}s">
+      <div class="ic">${ic(r.icon)}</div><b>${r.short}</b><span>${r.desc}</span>
+      <div class="check">${ic('check','stroke-width="3"')}</div>
+    </button>`).join('');
+  $$('.role').forEach(b=>b.onclick=()=>pickRole(b.dataset.role));
+}
+function pickRole(k){
+  ROLE=k; const r=ROLES[k];
+  $$('.role').forEach(b=>{const on=b.dataset.role===k; b.classList.toggle('sel',on); b.setAttribute('aria-checked',on)});
+  document.documentElement.style.setProperty('--accent', r.color);
+  $('#user').value=r.user; $('#pass').value='musimpanjang';
+  const bb=$('#bubble'); bb.classList.add('swap'); void bb.offsetWidth;
+  setTimeout(()=>{bb.innerHTML=r.bubble; bb.classList.remove('swap'); bb.style.animation='none'; void bb.offsetWidth; bb.style.animation='';},120);
+  const m=mascot(); m.classList.remove('jump'); void m.getBoundingClientRect(); m.classList.add('jump','happy');
+  setTimeout(()=>m.classList.remove('happy'),1200);
+}
+renderRoles(); pickRole('petani');
+// mascot reactions
+const pupils = ()=>$('#loginMascot .t-pupils');
+$('#user').addEventListener('input',e=>{ const x=Math.min(6,-4+e.target.value.length*.5); pupils().style.transform=`translate(${x}px,4px)`; });
+$('#user').addEventListener('focus',()=>{ pupils().style.transform='translate(3px,4px)'; mascot().classList.remove('wave'); });
+$('#user').addEventListener('blur',()=>{ pupils().style.transform=''; });
+$('#pass').addEventListener('focus',()=>{ if($('#pass').type==='password') mascot().classList.add('cover'); mascot().classList.remove('wave'); });
+$('#pass').addEventListener('blur',()=>mascot().classList.remove('cover'));
+$('#eyeBtn').onclick=()=>{ const p=$('#pass'); const show=p.type==='password'; p.type=show?'text':'password'; mascot().classList.toggle('cover',!show && document.activeElement===p); if(show){mascot().classList.remove('cover'); pupils().style.transform='translate(4px,6px)'} };
+document.addEventListener('mousemove',e=>{
+  if(current!=='login' || ['user','pass'].includes(document.activeElement?.id)) return;
+  const m=mascot(); if(!m) return; const r=m.getBoundingClientRect();
+  const dx=(e.clientX-(r.left+r.width/2))/window.innerWidth*14, dy=(e.clientY-(r.top+r.height/2))/window.innerHeight*10;
+  pupils().style.transform=`translate(${Math.max(-5,Math.min(5,dx))}px,${Math.max(-4,Math.min(5,dy))}px)`;
+});
+$('#loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const u=$('#user').value.trim(), p=$('#pass').value;
+  if(!u||!p){ $('#loginForm').classList.remove('shake'); void $('#loginForm').offsetWidth; $('#loginForm').classList.add('shake'); toast('Isi nama pengguna dan kata sandi dulu','info'); return; }
+  const b=$('#loginBtn'); b.classList.add('loading'); b.querySelector('.lbl').textContent='Memverifikasi…';
+  mascot().classList.remove('cover'); mascot().classList.add('happy','jump');
+  setTimeout(()=>{ b.classList.remove('loading'); b.querySelector('.lbl').textContent='Masuk'; go('app', buildApp); }, reduce?100:900);
+});
+// floating produce on hero
+(function floaties(){
+  const hero=$('.login-hero'); const items=['i-tomat','i-cabai','i-durian','i-tomat','i-kompos'];
+  const pos=[[78,12,40],[88,46,30],[66,70,34],[92,80,26],[56,22,22]];
+  pos.forEach((p,i)=>{ const d=document.createElement('div'); d.className='floaty'; d.style.cssText=`left:${p[0]}%;top:${p[1]}%;width:${p[2]}px;height:${p[2]}px;animation-delay:${-i*1.3}s;animation-duration:${5+i}s`;
+    d.innerHTML=`<svg viewBox="0 0 48 48" width="100%" height="100%"><use href="#${items[i]}"/></svg>`; hero.appendChild(d); });
+})();
+
+/* ---------- APP SHELL ---------- */
+function buildApp(){
+  const r=ROLES[ROLE];
+  document.documentElement.style.setProperty('--accent', r.color);
+  $('#sAva').textContent=r.ava; $('#sAva').style.background=r.color; $('#sName').textContent=r.name; $('#sRole').textContent=r.sub;
+  $('#sCard').innerHTML=r.card;
+  const navHTML = r.nav.map(([id,l,i],k)=>`<a href="#${id}" data-sec="${id}" class="${k===0?'on':''}" onclick="jump('${id}');return false">${ic(i)}<span>${l}</span></a>`).join('');
+  $('#sNav').innerHTML=navHTML; $('#bNav').innerHTML=navHTML;
+  const h=new Date().getHours(); const salam = h<11?'Selamat pagi':h<15?'Selamat siang':h<18?'Selamat sore':'Selamat malam';
+  $('#greet').textContent = `${salam}, ${r.name} 👋`;
+  $('#today').textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' · ' + r.label;
+  $('#fabCart').style.visibility = ROLE==='pembeli' ? 'visible':'hidden';
+  const v=$('#view'); v.innerHTML = VIEWS[ROLE]() + `<p class="foot-note">Prototype MUSIM PANJANG · BMC Competition 2026 HIMASETA · seluruh angka adalah data demo/asumsi dari BMC</p>`;
+  v.classList.remove('view-in'); void v.offsetWidth; v.classList.add('view-in');
+  AFTER[ROLE] && AFTER[ROLE]();
+  observe(); spy(); helper();
+}
+function jump(id){ const el=document.getElementById(id); if(!el) return; const y=el.getBoundingClientRect().top+window.scrollY-80; window.scrollTo({top:y,behavior:reduce?'auto':'smooth'}); setNav(id); }
+function setNav(id){ $$('#sNav a,#bNav a').forEach(a=>a.classList.toggle('on',a.dataset.sec===id)); }
+let spyHandler;
+function spy(){
+  window.removeEventListener('scroll',spyHandler);
+  spyHandler=()=>{
+    $('#top').classList.toggle('scrolled',window.scrollY>8);
+    const secs=ROLES[ROLE].nav.map(n=>document.getElementById(n[0])).filter(Boolean);
+    let cur=secs[0]?.id;
+    secs.forEach(s=>{ if(s.getBoundingClientRect().top<160) cur=s.id; });
+    if(window.innerHeight+window.scrollY>=document.body.scrollHeight-4) cur=secs[secs.length-1].id;
+    setNav(cur);
+  };
+  window.addEventListener('scroll',spyHandler,{passive:true});
+}
+let tipTimer, tipIdx=0;
+function helper(){
+  $('#helperMascot').innerHTML=tomiSVG(); const tip=$('#tip'); const tips=ROLES[ROLE].tips; tipIdx=0;
+  const show=()=>{ tip.innerHTML=`<b>Tips dari Tomi</b>${tips[tipIdx%tips.length]}`; tip.classList.remove('hide'); clearTimeout(tipTimer); tipTimer=setTimeout(()=>tip.classList.add('hide'),5200); };
+  setTimeout(show,1600);
+  $('#helperMascot .tomi').onclick=()=>{ tipIdx++; const m=$('#helperMascot .tomi'); m.classList.remove('jump'); void m.getBoundingClientRect(); m.classList.add('jump','happy'); setTimeout(()=>m.classList.remove('happy'),900); show(); };
+  tip.onclick=()=>tip.classList.add('hide');
+}
+function logout(){ go('login', ()=>{ closeModal(); renderRoles(); pickRole(ROLE); }); }
+function notif(){
+  const n={petani:['Siaga Serap Cianjur aktif','Unit MP-01 buka 07.00–16.00, harga lantai tomat Rp2.500/kg.'],
+    pembeli:['Pesanan #MP-2311 dikirim','Puree tomat 10 pouch sedang menuju Bandung.'],
+    kru:['Antrean baru','Kel. Tani Mekar Sari mendaftar 900 kg tomat grade B.'],
+    admin:['Sinyal baru: Situbondo','Harga tomat Rp1.000/kg, jauh di bawah rata-rata.'],
+    pemda:['Laporan Oktober siap','Ringkasan serapan bulanan dapat diunduh.']}[ROLE];
+  toast(`<b>${n[0]}</b> — ${n[1]}`,'bolt');
+}
+
+/* ---------- VIEWS ---------- */
+const kpi=(lbl,val,icon,c,extra='')=>`<div class="card kpi reveal" style="--c:${c}"><div class="kic">${ic(icon)}</div><div class="lbl">${lbl}</div><div class="val num">${val}</div>${extra}</div>`;
+const statusBadge=s=>`<span class="badge ${STATUS[s][1]}">${s==='siaga'?'<span class="pulse"></span>':''}${STATUS[s][0]}</span>`;
+const miniTruck=`<svg class="mini-truck" viewBox="0 0 330 170"><rect x="0" y="10" width="220" height="110" rx="12" fill="#FBF6EC"/><rect x="0" y="94" width="220" height="12" fill="#E4513B"/><use href="#logo" x="18" y="24" width="60" height="60"/><text x="90" y="56" font-family="Fraunces,serif" font-weight="800" font-size="21" fill="#1F4D36">MUSIM</text><text x="90" y="80" font-family="Fraunces,serif" font-weight="800" font-size="21" fill="#1F4D36">PANJANG</text><path d="M222 40h46c8 0 14 4 18 11l18 30c2 4 3 8 3 12v26h-85z" fill="#E4513B"/><path d="M234 50h32c4 0 7 2 9 5l13 22h-54z" fill="#CFE6F1"/><rect x="-2" y="116" width="312" height="10" rx="5" fill="#2D3A31"/><g class="wheel"><circle cx="58" cy="132" r="24" fill="#22302A"/><circle cx="58" cy="132" r="10" fill="#C9C2B2"/></g><g class="wheel"><circle cx="252" cy="132" r="24" fill="#22302A"/><circle cx="252" cy="132" r="10" fill="#C9C2B2"/></g></svg>`;
+
+const VIEWS = {
+/* ===== PETANI ===== */
+petani(){
+  const prices=[11800,12100,11500,11900,11200,10400,9800,9200,8700,8100,7400,6800,6100,5600,4900,4300,3800,3300,2900,2600,2300,2100,1900,1800,1700,1600,1500,1500,1400,1400];
+  const W=innerWidth>900?1000:520,H=innerWidth>900?220:170; const {d,sx,sy}=linePath(prices,W,H,0,13000);
+  const area=d+` L${sx(prices.length-1)} ${H-6} L${sx(0)} ${H-6} Z`;
+  return `
+  <section id="beranda">
+    <div class="grid g-hero" style="margin-top:8px">
+      <div class="card hero-card reveal">
+        <div>
+          <span class="badge b-siaga" style="background:rgba(228,81,59,.22);color:#FFD2C8"><span class="pulse"></span>Siaga Serap aktif di sentramu</span>
+          <h2>Unit Olah MP-01 sudah tiba di Desa Sukaresmi, Cianjur</h2>
+          <p class="sub">Buka 07.00–16.00 · tersisa 9 hari · titik timbang di balai desa</p>
+        </div>
+        <div class="hero-stats">
+          <div><b class="num">Rp2.500</b>harga lantai/kg</div>
+          <div><b class="num">±2 ton</b>kapasitas/hari</div>
+          <div><b>Hari ini</b>pembayaran</div>
+        </div>
+        ${miniTruck}<div class="road"></div>
+      </div>
+      <div class="card reveal">
+        <h3>${ic('wallet','width="18" height="18"')} Harga lantai tomat hari ini</h3>
+        <p class="sub">Grade B/C & kelebihan yang tak terserap pasar</p>
+        <div class="price-big"><b class="num" data-to="2500" data-pre="Rp">Rp0</b><span>/kg</span></div>
+        <div class="cmp">
+          <div class="cmp-row"><div style="display:flex;justify-content:space-between"><span>Harga lantai MUSIM PANJANG</span><b>Rp2.500</b></div><div class="bar"><i data-w="21%" style="background:var(--leaf)"></i></div></div>
+          <div class="cmp-row"><div style="display:flex;justify-content:space-between"><span>Harga tengkulak saat anjlok</span><b>Rp1.000–1.600</b></div><div class="bar"><i data-w="12%" style="background:var(--tomato)"></i></div></div>
+          <div class="cmp-row"><div style="display:flex;justify-content:space-between"><span>Harga normal sebelum panen raya</span><b>±Rp12.000</b></div><div class="bar"><i data-w="100%" style="background:#D8CBB0"></i></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card reveal" style="margin-top:16px">
+      <div class="sec-h" style="margin:0 0 6px"><div><h3>${ic('chart','width="18" height="18"')} Harga tomat di Cianjur, 30 hari terakhir</h3><p class="sub">Radar Harga menandai sentra ini "Siaga Serap" saat harga jatuh jauh di bawah rata-ratanya</p></div>${statusBadge('siaga')}</div>
+      <svg class="chart" viewBox="0 0 ${W} ${H+18}">
+        <defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E4513B" stop-opacity=".25"/><stop offset="1" stop-color="#E4513B" stop-opacity="0"/></linearGradient></defs>
+        ${[0,4000,8000,12000].map(v=>`<line x1="6" x2="${W-6}" y1="${sy(v)}" y2="${sy(v)}" stroke="#EFE7D8" stroke-dasharray="4 4"/><text x="${W-6}" y="${sy(v)-4}" text-anchor="end" font-size="10" fill="#8A958C">${v/1000}rb</text>`).join('')}
+        <path class="area" d="${area}" fill="url(#gArea)"/>
+        <line x1="6" x2="${W-6}" y1="${sy(2500)}" y2="${sy(2500)}" stroke="#5FA35A" stroke-width="2.5" stroke-dasharray="7 5"/>
+        <path class="line" d="${d}" stroke="#E4513B"/>
+        <circle cx="${sx(29)}" cy="${sy(1400)}" r="6" fill="#E4513B" stroke="#fff" stroke-width="3"/>
+        <text x="6" y="${H+14}" font-size="10" fill="#8A958C">16 Okt</text><text x="${W-6}" y="${H+14}" font-size="10" fill="#8A958C" text-anchor="end">Hari ini</text>
+      </svg>
+      <div class="legend"><span><i style="background:#E4513B"></i>Harga produsen</span><span><i style="background:#5FA35A"></i>Harga lantai MUSIM PANJANG</span></div>
+    </div>
+  </section>
+
+  <section id="setor">
+    <div class="sec-h"><div><h2>Setor panen</h2><p>Daftar antre timbang, dibayar hari yang sama</p></div></div>
+    <div class="grid g-2">
+      <div class="card reveal">
+        <div class="lbl-s" style="margin-top:0">Komoditas</div>
+        <div class="seg" id="segKom"><button data-v="tomat" class="on">🍅 Tomat</button><button data-v="cabai">🌶️ Cabai</button></div>
+        <div class="lbl-s">Grade</div>
+        <div class="seg" id="segGrade"><button data-v="B" class="on">Grade B</button><button data-v="C">Grade C</button><button data-v="A">Grade A</button></div>
+        <div class="lbl-s"><span>Perkiraan berat</span><b class="num" id="kgVal">320 kg</b></div>
+        <input type="range" class="range" id="kg" min="20" max="1500" step="10" value="320" aria-label="Berat panen">
+        <div class="est"><div><small>Perkiraan diterima</small><b class="num" id="estVal">Rp800.000</b></div><div style="text-align:right"><small>Harga lantai</small><b class="num" style="font-size:16px" id="floorVal">Rp2.500/kg</b></div></div>
+        <p class="sub" id="gradeNote" style="margin-top:10px"></p>
+        <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="daftarAntre()">${ic('scale','width="18" height="18"')} Daftar antre timbang</button>
+      </div>
+      <div class="card reveal">
+        <h3>${ic('info','width="18" height="18"')} Cara kerjanya</h3>
+        <div class="tl" style="margin-top:14px">
+          <div class="tl-i done"><div class="tdot">${ic('radar')}</div><div><b>Radar menandai Siaga Serap</b><small>Harga lantai diumumkan sebelum unit tiba</small></div></div>
+          <div class="tl-i done"><div class="tdot">${ic('users')}</div><div><b>Daftar lewat aplikasi / WhatsApp</b><small>Dapat nomor antre & jam timbang</small></div></div>
+          <div class="tl-i now"><div class="tdot">${ic('scale')}</div><div><b>Timbang & sortir di unit</b><small>Grade B/C diolah, grade A kembali ke pasar segar</small></div></div>
+          <div class="tl-i"><div class="tdot">${ic('wallet')}</div><div><b>Dibayar hari yang sama</b><small>Transfer bank atau tunai di lokasi</small></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="riwayat">
+    <div class="sec-h"><div><h2>Riwayat setoran</h2><p>Musim ini di Cianjur</p></div></div>
+    <div class="grid g-3">
+      ${kpi('Total disetor','<span data-to="880">0</span><small>kg</small>','scale','#5FA35A')}
+      ${kpi('Total diterima','<span data-to="2200000" data-pre="Rp">0</span>','wallet','#F4B740')}
+      ${kpi('Panen terselamatkan','<span data-to="100">0</span><small>%</small>','leaf','#2E6B4A','<span class="delta up">tidak ada yang dibuang</span>')}
+    </div>
+    <div class="card reveal" style="margin-top:16px"><div class="list" id="riwayatList"></div></div>
+  </section>
+
+  <section id="kompos">
+    <div class="sec-h"><div><h2>Kompos dari sisa olahan</h2><p>Kulit, biji, dan tangkai dikomposkan bersama kelompok tani</p></div></div>
+    <div class="card reveal" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <svg viewBox="0 0 48 48" width="72" height="72"><use href="#i-kompos"/></svg>
+      <div style="flex:1;min-width:200px"><h3>Stok kompos Sukaresmi: <span class="num" data-to="1.8" data-dec="1">0</span> ton</h3><p class="sub">Siap diambil mulai 20 Nov di balai desa. Harga khusus untuk petani pemasok.</p></div>
+      <button class="btn btn-dark" onclick="toast('Kompos 50 kg dipesan, ambil 20 Nov 🌱','leaf')">${ic('leaf','width="18" height="18"')} Pesan kompos</button>
+    </div>
+  </section>`;
+},
+
+/* ===== PEMBELI ===== */
+pembeli(){
+  return `
+  <section id="katalog">
+    <div class="card hero-card reveal" style="margin-top:8px;min-height:190px">
+      <div><span class="badge" style="background:rgba(244,183,64,.25);color:#FFE3A6">Harga dikunci per kuartal</span>
+      <h2>Bahan sambal & saus lokal, stabil sepanjang tahun</h2>
+      <p class="sub">Mutu seragam · asal tercatat lewat QR · garansi ganti produk cacat</p></div>
+      <div class="hero-stats"><div><b>Rp20.000</b>puree tomat/kg</div><div><b>Rp75.000</b>cabai kering/kg</div><div><b>3 sentra</b>pemasok aktif</div></div>
+      ${miniTruck}<div class="road"></div>
+    </div>
+    <div class="sec-h"><div><h2>Katalog bahan olahan</h2><p>Dari kelebihan panen yang terserap di sentra</p></div></div>
+    <div class="grid g-4" id="prodGrid">
+      ${PRODUCTS.map(p=>`<div class="card prod reveal">
+        <div class="art" style="--bg:${p.bg}">${p.tag?`<span class="badge b-waspada">${p.tag}</span>`:''}<svg viewBox="0 0 96 96"><use href="#${p.art}"/></svg></div>
+        <div><h4>${p.name}</h4><span class="sub">${p.size}</span></div>
+        <p class="desc">${p.desc}</p>
+        <div class="pr"><div><b class="num">${rp(p.price)}</b> <small>/${p.unit}</small></div>
+          <div class="qty"><button aria-label="Kurangi" onclick="qty('${p.id}',-1)">−</button><span id="q-${p.id}">${S.cart[p.id]||0}</span><button aria-label="Tambah" onclick="qty('${p.id}',1)">+</button></div></div>
+      </div>`).join('')}
+    </div>
+  </section>
+
+  <section id="keranjang">
+    <div class="sec-h"><div><h2>Keranjang & langganan</h2><p>Pesan sekali atau langganan bulanan</p></div></div>
+    <div class="grid g-2">
+      <div class="card reveal"><h3>${ic('cart','width="18" height="18"')} Keranjang</h3><div id="cartList" class="list" style="margin-top:6px"></div>
+        <div class="cart-total"><div><small class="sub">Total</small><br><b class="num" id="cartTotal">Rp0</b></div><button class="btn btn-primary" onclick="checkout()">Pesan sekarang</button></div>
+      </div>
+      <div class="card reveal">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h3>${ic('shield','width="18" height="18"')} Langganan bulanan</h3><p class="sub">Kirim tiap tanggal 1, harga dikunci per kuartal</p></div>
+          <label class="switch"><input type="checkbox" id="subT" ${S.sub?'checked':''} onchange="S.sub=this.checked;renderCart();toast(this.checked?'Langganan bulanan aktif':'Langganan dinonaktifkan')"><span></span></label></div>
+        <div class="tl" style="margin-top:18px">
+          <div class="tl-i done"><div class="tdot">${ic('check')}</div><div><b>Q4 2026 · harga terkunci</b><small>Puree Rp20.000 · Cabai kering Rp75.000</small></div></div>
+          <div class="tl-i now"><div class="tdot">${ic('truck')}</div><div><b>Kiriman berikutnya: 1 Desember</b><small>Dari gudang transit Bandung</small></div></div>
+          <div class="tl-i"><div class="tdot">${ic('clock')}</div><div><b>Q1 2027 · harga baru diumumkan 15 Des</b><small>Pemberitahuan lewat WhatsApp</small></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pesanan">
+    <div class="sec-h"><div><h2>Pesanan aktif</h2><p>Lacak status pengiriman</p></div></div>
+    <div class="card reveal">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b>#MP-2311</b> <span class="sub">· 10 pouch puree tomat · 2 kg cabai kering</span></div><span class="badge b-menuju">Dalam perjalanan</span></div>
+      <div class="pipe" style="margin-top:18px">
+        ${[['check','Dibayar','12 Nov'],['pkg','Dikemas','13 Nov'],['qr','QR asal','13 Nov'],['truck','Dikirim','14 Nov'],['home','Diterima','est. 16 Nov']].map((s,i)=>`<div class="stage ${i===3?'act':''}"><div class="sic" style="${i<3?'background:var(--accent);border-color:var(--accent);color:#fff':''}">${ic(s[0])}</div><b>${s[1]}</b><small>${s[2]}</small></div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section id="lacak">
+    <div class="sec-h"><div><h2>Lacak asal produk</h2><p>Pindai QR di kemasan untuk melihat jejaknya</p></div></div>
+    <div class="grid g-2">
+      <div class="card reveal" style="text-align:center">
+        <div class="scan-box" id="scanBox"><span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span><div class="qr">${fakeQR(31)}</div><div class="beam"></div></div>
+        <button class="btn btn-primary" onclick="scanQR()">${ic('qr','width="18" height="18"')} Pindai QR kemasan</button>
+        <p class="sub" style="margin-top:8px">Kode contoh: MP01-CJR-1114-07</p>
+      </div>
+      <div class="card reveal">
+        <div class="empty" id="traceEmpty">${ic('qr','width="40" height="40" style="opacity:.4"')}<br>Hasil pindai akan muncul di sini</div>
+        <div class="trace" id="trace">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div><b style="font-size:16px">Puree Tomat Kental · 1 kg</b><br><small class="sub">Batch MP01-CJR-1114-07</small></div><span class="badge b-normal">Terverifikasi</span></div>
+          <div class="tl" style="margin-top:16px">
+            <div class="tl-i done"><div class="tdot">${ic('pin')}</div><div><b>Sentra Cianjur, Jawa Barat</b><small>Tomat grade B · Kel. Tani Mekar Sari · 14 Nov 2026</small></div></div>
+            <div class="tl-i done"><div class="tdot">${ic('pot')}</div><div><b>Diolah di Unit MP-01</b><small>Cuci → pulper → ketel → sealer vakum</small></div></div>
+            <div class="tl-i done"><div class="tdot">${ic('box')}</div><div><b>Gudang transit Bandung</b><small>15 Nov 2026</small></div></div>
+            <div class="tl-i now"><div class="tdot">${ic('home')}</div><div><b>Dapur Anda</b><small>Petani mendapat harga lantai Rp2.500/kg</small></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+},
+
+/* ===== KRU ===== */
+kru(){
+  return `
+  <section id="operasi">
+    <div class="grid g-hero" style="margin-top:8px">
+      <div class="card hero-card reveal">
+        <div><span class="badge" style="background:rgba(95,163,90,.3);color:#D6F0CF"><span class="pulse"></span>Unit beroperasi</span>
+        <h2>Unit MP-01 · Sukaresmi, Cianjur</h2><p class="sub">Hari ke-5 dari 14 · Siaga Serap tomat · buka 07.00–16.00</p></div>
+        <div class="hero-stats"><div><b class="num" id="hsProc">1.080 kg</b>diserap hari ini</div><div><b class="num" id="hsQ">5</b>antrean</div><div><b>60°C</b>pengering</div></div>
+        ${miniTruck}<div class="road"></div>
+      </div>
+      <div class="card reveal" style="text-align:center">
+        <h3 style="justify-content:center">Kapasitas hari ini</h3>
+        <div class="ring"><svg viewBox="0 0 170 170"><circle class="bg" cx="85" cy="85" r="70"/><circle class="fg" id="ringFg" cx="85" cy="85" r="70" stroke-dasharray="439.8" stroke-dashoffset="439.8"/></svg>
+          <div class="center"><div><b class="num" id="ringPct">0%</b><small id="ringTxt">dari 2.000 kg</small></div></div></div>
+      </div>
+    </div>
+    <div class="grid g-4" style="margin-top:16px">
+      ${kpi('Bahan segar musim ini','<span data-to="6.4" data-dec="1">0</span><small>ton</small>','scale','#F08A3C')}
+      ${kpi('Puree dikemas','<span data-to="1580">0</span><small>pouch</small>','pkg','#E4513B')}
+      ${kpi('Petani dilayani','<span data-to="47">0</span>','users','#5FA35A')}
+      ${kpi('Kompos','<span data-to="1.8" data-dec="1">0</span><small>ton</small>','leaf','#2E6B4A')}
+    </div>
+  </section>
+
+  <section id="antrean">
+    <div class="sec-h"><div><h2>Antrean timbang</h2><p>Ketuk "Timbang" saat bahan masuk</p></div></div>
+    <div class="card reveal"><div class="tbl-wrap"><table class="table"><thead><tr><th>Pemasok</th><th>Komoditas</th><th>Berat</th><th>Grade</th><th>Bayar</th><th></th></tr></thead><tbody id="qBody"></tbody></table></div></div>
+  </section>
+
+  <section id="produksi">
+    <div class="sec-h"><div><h2>Alur produksi</h2><p>Status mesin real-time (simulasi)</p></div></div>
+    <div class="grid g-2">
+      <div class="card reveal">
+        <div class="pipe">
+          ${[['scale','Timbang','sortir'],['wash','Cuci','air bersih'],['pot','Pulper & ketel','puree'],['sunny','Pengering','cabai'],['qr','Kemas & QR','sealer']].map((s,i)=>`<div class="stage" data-st="${i}"><div class="sic">${ic(s[0])}</div><b>${s[1]}</b><small>${s[2]}</small></div>`).join('')}
+        </div>
+        <p class="sub" style="margin-top:14px;text-align:center" id="stageTxt">Memulai…</p>
+      </div>
+      <div class="card reveal">
+        <h3>${ic('gear','width="18" height="18"')} Kondisi unit</h3>
+        <div class="gauge-row" style="margin-top:14px">
+          <div class="g">${ic('fire','width="18" height="18" style="color:#E4513B"')}<span style="width:110px">Suhu pengering</span><div class="bar"><i data-w="60%" style="background:#E4513B"></i></div><b>60°C</b></div>
+          <div class="g">${ic('bolt','width="18" height="18" style="color:#F4B740"')}<span style="width:110px">Genset</span><div class="bar"><i data-w="72%" style="background:#F4B740"></i></div><b>72%</b></div>
+          <div class="g">${ic('drop','width="18" height="18" style="color:#3E6FA3"')}<span style="width:110px">Air bersih</span><div class="bar"><i data-w="55%" style="background:#3E6FA3"></i></div><b>550 L</b></div>
+          <div class="g">${ic('sunny','width="18" height="18" style="color:#5FA35A"')}<span style="width:110px">Gas LPG / surya</span><div class="bar"><i data-w="40%" style="background:#5FA35A"></i></div><b>hibrida</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="batch">
+    <div class="sec-h"><div><h2>Batch & QR asal</h2><p>Setiap kemasan mencatat sentra, tanggal, komoditas</p></div><button class="btn btn-primary btn-sm" onclick="newBatch()">${ic('plus','width="16" height="16"')} Batch baru</button></div>
+    <div class="card reveal"><div class="list" id="batchList"></div></div>
+  </section>`;
+},
+
+/* ===== ADMIN RADAR ===== */
+admin(){
+  return `
+  <section id="radar">
+    <div class="grid g-4" style="margin-top:8px">
+      ${kpi('Sentra dipantau','<span data-to="42">0</span><small>kab.</small>','radar','#2E6B4A')}
+      ${kpi('Siaga Serap','<span data-to="3">0</span>','bolt','#E4513B','<span class="delta down">+1 hari ini</span>')}
+      ${kpi('Unit aktif','<span data-to="1">0</span><small>/1</small>','truck','#F08A3C')}
+      ${kpi('Pesanan B2B siap','<span data-to="8.6" data-dec="1">0</span><small>ton</small>','box','#3E6FA3')}
+    </div>
+    <div class="grid g-hero" style="margin-top:16px">
+      <div class="card reveal" style="padding:12px">
+        <div class="map-wrap" id="mapWrap"></div>
+      </div>
+      <div class="card detail reveal" id="detail"></div>
+    </div>
+  </section>
+  <section id="sentra">
+    <div class="sec-h"><div><h2>Daftar sentra</h2><p>Sumber: Panel Harga Bapanas, PIHPS & laporan ketua kelompok tani</p></div></div>
+    <div class="card reveal"><div class="tbl-wrap"><table class="table"><thead><tr><th>Sentra</th><th>Komoditas</th><th>Harga kini</th><th>Rata-rata 90 hr</th><th>Turun</th><th>Status</th></tr></thead><tbody id="sBody"></tbody></table></div></div>
+  </section>
+  <section id="armada">
+    <div class="sec-h"><div><h2>Armada unit olah</h2><p>Roadmap: 1 unit (2027) → 2 unit (2028) → 3 unit (2029)</p></div></div>
+    <div class="grid g-3">
+      <div class="card reveal"><div style="display:flex;justify-content:space-between"><h3>${ic('truck','width="18" height="18"')} MP-01</h3><span class="badge b-normal" id="unitBadge">Beroperasi</span></div><p class="sub" id="unitLoc" style="margin-top:6px">Cianjur, Jawa Barat</p><div class="cmp-row" style="margin-top:12px"><div style="display:flex;justify-content:space-between"><span>Pemakaian tahun ini</span><b>30%</b></div><div class="bar"><i data-w="30%" style="background:var(--accent)"></i></div></div></div>
+      <div class="card reveal" style="opacity:.75"><div style="display:flex;justify-content:space-between"><h3>${ic('truck','width="18" height="18"')} MP-02</h3><span class="badge b-info">2028</span></div><p class="sub" style="margin-top:6px">Lini durian beku musiman</p><div class="cmp-row" style="margin-top:12px"><div style="display:flex;justify-content:space-between"><span>Target pemakaian</span><b>45%</b></div><div class="bar"><i data-w="45%" style="background:#D8CBB0"></i></div></div></div>
+      <div class="card reveal" style="opacity:.6"><div style="display:flex;justify-content:space-between"><h3>${ic('truck','width="18" height="18"')} MP-03</h3><span class="badge b-info">2029</span></div><p class="sub" style="margin-top:6px">Ekspansi Jawa Timur & Sumatera Utara</p><div class="cmp-row" style="margin-top:12px"><div style="display:flex;justify-content:space-between"><span>Target pemakaian</span><b>55%</b></div><div class="bar"><i data-w="55%" style="background:#D8CBB0"></i></div></div></div>
+    </div>
+  </section>`;
+},
+
+/* ===== PEMDA ===== */
+pemda(){
+  const months=['Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov'];
+  const tom=[2.1,3.4,4.8,9.6,6.2,3.1,5.4,5.4], cab=[0.4,0.6,1.1,0.9,1.2,0.8,0.9,0.9];
+  const max=12;
+  return `
+  <section id="ringkasan">
+    <div class="grid g-4" style="margin-top:8px">
+      ${kpi('Bahan segar terserap','<span data-to="46.8" data-dec="1">0</span><small>ton</small>','scale','#3E6FA3','<span class="delta up">target thn-1: 108 ton</span>')}
+      ${kpi('Dibayar ke petani','<span data-to="168" data-pre="Rp">0</span><small>juta</small>','wallet','#F4B740')}
+      ${kpi('Petani terlayani','<span data-to="212">0</span>','users','#5FA35A')}
+      ${kpi('Kompos dihasilkan','<span data-to="9.4" data-dec="1">0</span><small>ton</small>','leaf','#2E6B4A')}
+    </div>
+  </section>
+  <section id="serapan">
+    <div class="sec-h"><div><h2>Serapan per bulan</h2><p>Simulasi tahun operasi pertama (ton bahan segar)</p></div><button class="btn btn-ghost btn-sm" onclick="toast('Laporan serapan (PDF) diunduh — demo','dl')">${ic('dl','width="16" height="16"')} Unduh laporan</button></div>
+    <div class="card reveal">
+      <div class="bars">${months.map((m,i)=>`<div class="bcol"><span class="bv">${fmt(tom[i]+cab[i],1)}</span><div class="stack" data-h="${(tom[i]+cab[i])/max*100}%"><i style="height:${tom[i]/(tom[i]+cab[i])*100}%;background:#E4513B"></i><i style="height:${cab[i]/(tom[i]+cab[i])*100}%;background:#F4B740"></i></div><small>${m}</small></div>`).join('')}</div>
+      <div class="legend" style="justify-content:center"><span><i style="background:#E4513B"></i>Tomat</span><span><i style="background:#F4B740"></i>Cabai</span></div>
+    </div>
+    <div class="card reveal" style="margin-top:16px"><div class="tbl-wrap"><table class="table"><thead><tr><th>Sentra</th><th>Kejadian Siaga Serap</th><th>Terserap</th><th>Petani</th><th>Rata-rata hari aktif</th></tr></thead><tbody>
+      <tr><td><b>Cianjur</b></td><td>3</td><td class="num">24,6 ton</td><td>118</td><td>12</td></tr>
+      <tr><td><b>Garut</b></td><td>1</td><td class="num">6,8 ton</td><td>31</td><td>9</td></tr>
+      <tr><td><b>Boyolali</b></td><td>2</td><td class="num">15,4 ton</td><td>63</td><td>10</td></tr>
+    </tbody></table></div></div>
+  </section>
+  <section id="dampak">
+    <div class="sec-h"><div><h2>Dampak</h2><p>Kontribusi terhadap pengurangan susut pangan</p></div></div>
+    <div class="grid g-3">
+      <div class="card reveal"><h3>${ic('leaf','width="18" height="18"')} Panen tidak terbuang</h3><p class="sub" style="margin-top:6px">Grade B/C dan kelebihan pasok yang biasanya busuk di kebun kini menjadi bahan olahan.</p><div class="price-big"><b class="num" data-to="46.8" data-dec="1">0</b><span>ton</span></div></div>
+      <div class="card reveal"><h3>${ic('globe','width="18" height="18"')} Substitusi impor</h3><p class="sub" style="margin-top:6px">Indonesia masih mengimpor 20.176 ton tomat olahan (2025). Puree lokal mengisi sebagian kebutuhan UMKM.</p><div class="price-big"><b class="num" data-to="8.2" data-dec="1">0</b><span>ton puree</span></div></div>
+      <div class="card reveal"><h3>${ic('users','width="18" height="18"')} Tenaga lokal musiman</h3><p class="sub" style="margin-top:6px">Setiap kali unit singgah, warga desa direkrut sebagai tenaga olah selama 2–6 minggu.</p><div class="price-big"><b class="num" data-to="36">0</b><span>orang</span></div></div>
+    </div>
+  </section>`;
+}
+};
+
+/* ---------- AFTER RENDER HOOKS ---------- */
+const AFTER = {
+petani(){
+  const segs=(id,key)=>$$('#'+id+' button').forEach(b=>b.onclick=()=>{ $$('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b)); S.setor[key]=b.dataset.v; calcSetor(); });
+  segs('segKom','kom'); segs('segGrade','grade');
+  $('#kg').oninput=e=>{S.setor.kg=+e.target.value; calcSetor()};
+  calcSetor(); renderRiwayat();
+},
+pembeli(){ renderCart(); },
+kru(){ renderQueue(); renderBatches(); updateRing(); runStages(); },
+admin(){ renderMap(); renderDetail(); renderSentraTable(); }
+};
+
+/* ---------- PETANI LOGIC ---------- */
+const FLOOR={tomat:2500,cabai:10000};
+function calcSetor(){
+  const {kom,grade,kg}=S.setor; const f=FLOOR[kom];
+  const r=$('#kg'); r.style.setProperty('--p',((kg-r.min)/(r.max-r.min)*100)+'%');
+  $('#kgVal').textContent=fmt(kg)+' kg';
+  $('#floorVal').textContent=rp(f)+'/kg';
+  const eligible=grade!=='A';
+  $('#estVal').textContent= eligible ? rp(kg*f) : '—';
+  $('#gradeNote').innerHTML = eligible
+    ? (kom==='cabai' ? 'Harga lantai cabai berada di atas harga anjlok Rp2.000–3.000/kg. Tujuannya mengurangi kerugian petani.' : 'Pembayaran ditransfer setelah timbang, di hari yang sama.')
+    : '<b style="color:var(--chili)">Grade A tetap dijual ke pasar segar.</b> Unit hanya menyerap grade B/C dan kelebihan yang tak terserap pasar.';
+}
+function daftarAntre(){
+  const {kom,grade,kg}=S.setor;
+  if(grade==='A'){ toast('Grade A lebih untung dijual ke pasar segar 👍','info'); return; }
+  const no='A-'+String(Math.floor(12+Math.random()*30)).padStart(3,'0');
+  modal(`${tomiSVG('happy')}<h3>Kamu masuk antrean!</h3><p>Tunjukkan tiket ini di titik timbang Unit MP-01.</p>
+    <div class="ticket"><div class="qrs">${fakeQR(kg)}</div><div><small class="sub">Nomor antre</small><b>${no}</b><small class="sub">${kom==='tomat'?'Tomat':'Cabai'} grade ${grade} · ±${fmt(kg)} kg<br>Jam timbang ± 10.30 WIB</small></div></div>
+    <button class="btn btn-primary btn-block" onclick="closeModal()">Siap, sampai jumpa!</button>`);
+  $('#modal .tomi').style.width='110px';
+  S.riwayat.unshift({d:'Hari ini',kom,kg,g:grade,v:kg*FLOOR[kom],pending:true}); renderRiwayat(); confetti(40);
+}
+function renderRiwayat(){
+  $('#riwayatList').innerHTML=S.riwayat.map(r=>`<div class="li"><div class="lic" style="background:${r.kom==='tomat'?'#FCE3DE':'#FBE1D6'}"><svg viewBox="0 0 48 48"><use href="#i-${r.kom}"/></svg></div>
+    <div class="grow"><b>${r.kom==='tomat'?'Tomat':'Cabai'} grade ${r.g} · ${fmt(r.kg)} kg</b><small>${r.d} · Unit MP-01 Sukaresmi</small></div>
+    <div class="amt num">${rp(r.v)}<small style="color:${r.pending?'#9A6A0B':'#2E6B4A'}">${r.pending?'menunggu timbang':'✓ dibayar'}</small></div></div>`).join('');
+}
+
+/* ---------- PEMBELI LOGIC ---------- */
+function qty(id,d){
+  S.cart[id]=Math.max(0,(S.cart[id]||0)+d); if(!S.cart[id]) delete S.cart[id];
+  const q=$('#q-'+id); if(q){ q.textContent=S.cart[id]||0; q.animate([{transform:'scale(1.4)'},{transform:'scale(1)'}],{duration:250}); }
+  renderCart(); const f=$('#fabCart'); f.classList.remove('bump'); void f.offsetWidth; f.classList.add('bump');
+  if(d>0) toast('Ditambahkan ke keranjang','cart');
+}
+function renderCart(){
+  const items=Object.entries(S.cart).map(([id,q])=>({...PRODUCTS.find(p=>p.id===id),q}));
+  const total=items.reduce((a,b)=>a+b.price*b.q,0);
+  $('#cartList').innerHTML = items.length ? items.map(i=>`<div class="li"><div class="lic" style="background:${i.bg}"><svg viewBox="0 0 96 96"><use href="#${i.art}"/></svg></div><div class="grow"><b>${i.name}</b><small>${i.size} × ${i.q}</small></div><div class="amt num">${rp(i.price*i.q)}</div></div>`).join('') + (S.sub?`<div class="li"><div class="lic" style="background:var(--mint);color:var(--forest2)">${ic('shield','width="20" height="20"')}</div><div class="grow"><b>Langganan bulanan</b><small>Dikirim ulang tiap tanggal 1</small></div><div class="amt" style="color:var(--forest2)">aktif</div></div>`:'')
+    : `<div class="empty">Keranjang masih kosong. Tambahkan produk dari katalog.</div>`;
+  $('#cartTotal').textContent=rp(total);
+  $('#fabN').textContent=items.reduce((a,b)=>a+b.q,0);
+}
+function checkout(){
+  if(!Object.keys(S.cart).length){ toast('Keranjang masih kosong','info'); return; }
+  const total=$('#cartTotal').textContent;
+  modal(`${tomiSVG('happy wave')}<h3>Pesanan diterima!</h3><p>Total <b>${total}</b>${S.sub?' · langganan bulanan aktif':''}. Bahan akan dikirim dari gudang transit Bandung.</p>
+    <div class="ticket"><div class="qrs">${fakeQR(99)}</div><div><small class="sub">No. pesanan</small><b style="font-size:24px">#MP-2312</b><small class="sub">Estimasi tiba 2–3 hari kerja</small></div></div>
+    <button class="btn btn-primary btn-block" onclick="closeModal()">Mantap!</button>`);
+  $('#modal .tomi').style.width='110px';
+  S.cart={}; renderCart(); PRODUCTS.forEach(p=>{const q=$('#q-'+p.id); if(q) q.textContent=0}); confetti();
+}
+function scanQR(){
+  const b=$('#scanBox'); $('#trace').classList.remove('show'); $('#traceEmpty').style.display='block';
+  b.classList.add('scanning');
+  setTimeout(()=>{ b.classList.remove('scanning'); $('#traceEmpty').style.display='none'; $('#trace').classList.add('show'); toast('QR terbaca: MP01-CJR-1114-07','qr'); }, 1800);
+}
+
+/* ---------- KRU LOGIC ---------- */
+function renderQueue(){
+  $('#qBody').innerHTML=S.queue.map((q,i)=>`<tr><td><b>${q.n}</b></td><td>${q.kom}</td><td class="num">${fmt(q.kg)} kg</td><td><span class="badge ${q.g==='B'?'b-normal':'b-waspada'}">${q.g}</span></td><td class="num">${rp(q.kg*2500)}</td>
+    <td>${q.st==='antre'?`<button class="btn btn-primary btn-sm" onclick="timbang(${i})">Timbang</button>`:`<span class="badge b-info">✓ dibayar</span>`}</td></tr>`).join('');
+  const left=S.queue.filter(q=>q.st==='antre').length; const hq=$('#hsQ'); if(hq) hq.textContent=left;
+}
+function timbang(i){
+  const q=S.queue[i]; q.st='done'; S.processed+=q.kg; renderQueue(); updateRing();
+  $('#hsProc').textContent=fmt(S.processed)+' kg';
+  toast(`${q.n}: ${fmt(q.kg)} kg tercatat · ${rp(q.kg*2500)} dibayar`,'wallet');
+  if(S.processed>=2000){ toast('Kapasitas harian tercapai! 🎉','bolt'); confetti(50); }
+}
+function updateRing(){
+  const pct=Math.min(1,S.processed/2000); const c=439.8;
+  requestAnimationFrame(()=>{ $('#ringFg').style.strokeDashoffset=c*(1-pct); });
+  $('#ringPct').textContent=Math.round(pct*100)+'%'; $('#ringTxt').textContent=fmt(S.processed)+' / 2.000 kg';
+}
+let stageTimer;
+function runStages(){
+  clearInterval(stageTimer); let k=0;
+  const txt=['Menimbang & menyortir grade B/C','Mencuci dengan air bersih','Pulper & ketel memasak puree','Pengering kabinet hibrida untuk cabai','Sealer vakum & cetak QR asal'];
+  const tick=()=>{ if(!$('#stageTxt')){clearInterval(stageTimer);return;} $$('.stage[data-st]').forEach(s=>s.classList.toggle('act',+s.dataset.st===k)); $('#stageTxt').textContent=txt[k]; k=(k+1)%5; };
+  tick(); stageTimer=setInterval(tick,1800);
+}
+function renderBatches(){
+  $('#batchList').innerHTML=S.batches.map(b=>`<div class="li"><div class="lic" style="background:#fff;border:1px solid var(--line);width:52px;height:52px">${fakeQR(b.code.length*7+b.t.length)}</div><div class="grow"><b>${b.code}</b><small>${b.prod} · ${b.t}</small></div><button class="btn btn-ghost btn-sm" onclick="toast('Label QR dikirim ke printer (demo)','qr')">Cetak</button></div>`).join('');
+}
+function newBatch(){
+  const n=String(S.batches.length+7).padStart(2,'0');
+  const prods=['Puree tomat · 120 pouch','Cabai kering · 42 kg','Puree tomat · 24 jeriken'];
+  S.batches.unshift({code:`MP01-CJR-1115-${n}`,prod:prods[S.batches.length%3],t:'Hari ini, '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})});
+  renderBatches(); toast('Batch baru dibuat & QR siap dicetak','qr');
+}
+
+/* ---------- ADMIN MAP ---------- */
+const JAVA=[[105.2,-6.8],[105.6,-6.05],[106.1,-5.92],[106.8,-6.05],[107.6,-6.2],[108.3,-6.25],[108.6,-6.7],[109.3,-6.85],[110.4,-6.95],[110.9,-6.4],[111.5,-6.65],[112.6,-6.9],[113.5,-7.05],[114.4,-7.6],[114.45,-8.2],[114.6,-8.75],[113.7,-8.45],[112.5,-8.4],[111.2,-8.25],[110.3,-8.1],[109.4,-7.75],[108.4,-7.8],[107.5,-7.5],[106.5,-7.4],[105.5,-6.85]];
+const MADURA=[[112.7,-7.05],[113.5,-6.88],[114.1,-6.95],[113.9,-7.2],[113.0,-7.22]];
+const prj=(lon,lat)=>[ (lon-104.9)*100, (-lat-5.6)*100+60 ];
+function smooth(pts){ const p=pts.map(([a,b])=>prj(a,b)); let d=`M${p[0][0]} ${p[0][1]}`; for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length]; const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2; d+=` Q${a[0]} ${a[1]} ${mx} ${my}`;} return d+'Z'; }
+function renderMap(){
+  const marks=SENTRA.map(s=>{const [x,y]=prj(s.lon,s.lat); const st=(S.moving===s.id)?'menuju':s.status; const c=STATUS[st][2];
+    return `<g class="mk mk-${s.status} ${S.selSentra===s.id?'sel':''}" data-id="${s.id}" tabindex="0" role="button" aria-label="${s.name}">
+      ${s.status!=='normal'?`<circle class="halo" cx="${x}" cy="${y}" r="16" fill="${c}" opacity=".5"/>`:''}
+      <circle class="core" cx="${x}" cy="${y}" r="12" fill="${c}" stroke="#fff" stroke-width="3.5"/>
+      <text x="${s.lp=='l'?x-20:s.lp=='r'?x+20:x}" y="${s.lp?y+6:y-20}" text-anchor="${s.lp=='l'?'end':s.lp=='r'?'start':'middle'}">${s.name}</text></g>`}).join('');
+  const us=SENTRA.find(s=>s.id===S.unitAt); const [ux,uy0]=prj(us.lon,us.lat); const uy=uy0+6;
+  $('#mapWrap').innerHTML=`<div class="map-scroll"><svg viewBox="0 0 990 420" id="mapSvg">
+    <defs><pattern id="sea" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#BCD6DE"/></pattern></defs>
+    <rect width="990" height="420" fill="url(#sea)"/>
+    <path class="map-land" d="${smooth(JAVA)}"/><path class="map-land" d="${smooth(MADURA)}"/>
+    <text x="200" y="300" font-size="13" fill="#A99C80" font-weight="700" letter-spacing="3">JAWA BARAT</text>
+    <text x="500" y="320" font-size="13" fill="#A99C80" font-weight="700" letter-spacing="3">JAWA TENGAH</text>
+    <text x="740" y="340" font-size="13" fill="#A99C80" font-weight="700" letter-spacing="3">JAWA TIMUR</text>
+    <path id="route" d="" fill="none" stroke="#3E6FA3" stroke-width="3" stroke-dasharray="8 7" opacity="0"/>
+    ${marks}
+    <g id="unitMk" transform="translate(${ux-18} ${uy+10})"><rect width="36" height="22" rx="6" fill="#1F4D36"/><g transform="translate(6 1)" stroke="#F4B740" fill="none" stroke-width="2"><path d="M2 6h11v10H2zM13 9h4l4 4v3h-8z" transform="scale(.9)"/></g></g>
+  </svg></div><div class="map-hint">← geser peta →</div>
+  <div class="inset" id="insetKph"><b>📍 Sumatera · Kepahiang, Bengkulu</b>Durian · ${statusBadge(KEPAHIANG.status)}</div>
+  <div class="map-legend"><span><i style="background:#E4513B"></i>Siaga Serap</span><span><i style="background:#E5A31B"></i>Waspada</span><span><i style="background:#5FA35A"></i>Normal</span><span><i style="background:#1F4D36;border-radius:3px"></i>Unit MP-01</span></div>`;
+  $$('.mk').forEach(m=>{ m.onclick=()=>selectSentra(m.dataset.id); m.onkeydown=e=>{if(e.key==='Enter') selectSentra(m.dataset.id)}; });
+  $('#insetKph').onclick=()=>selectSentra('kph');
+  const sc=$('.map-scroll'); if(sc && sc.scrollWidth>sc.clientWidth){ sc.scrollLeft=Math.max(0,ux*820/990-sc.clientWidth/2); }
+}
+function getS(id){ return id==='kph'?KEPAHIANG:SENTRA.find(s=>s.id===id); }
+function selectSentra(id){ S.selSentra=id; $$('.mk').forEach(m=>m.classList.toggle('sel',m.dataset.id===id)); renderDetail(); if(innerWidth<1100) jumpEl('#detail'); }
+function jumpEl(sel){ const el=$(sel); window.scrollTo({top:el.getBoundingClientRect().top+scrollY-90,behavior:'smooth'}); }
+function renderDetail(){
+  const s=getS(S.selSentra); const drop=Math.round((1-s.now/s.avg)*100);
+  const st = S.moving===s.id?'menuju':s.status;
+  const here = S.unitAt===s.id;
+  const trend=Array.from({length:20},(_,i)=>s.avg*(1-(drop/100)*Math.pow(i/19,1.6))*(1+Math.sin(i*1.7)*.03));
+  const {d}=linePath(trend,300,70,0,s.avg*1.1);
+  $('#detail').innerHTML=`
+    <div class="dh"><div><small class="sub">${s.prov}</small><h3>${s.name}</h3><span class="sub">${s.kom}</span></div>${statusBadge(st)}</div>
+    <div class="stat-row"><div><small>Harga kini</small><b class="num">${rp(s.now)}</b></div><div><small>Rata-rata</small><b class="num">${rp(s.avg)}</b></div><div><small>Turun</small><b class="num" style="color:${drop>50?'var(--chili)':'inherit'}">${drop}%</b></div></div>
+    <svg class="chart" viewBox="0 0 300 70" style="margin-bottom:8px"><path d="${d}" fill="none" stroke="${STATUS[s.status][2]}" stroke-width="3" stroke-linecap="round"/></svg>
+    <div class="list">
+      <div class="li"><div class="lic" style="background:var(--mint);color:var(--forest2)">${ic('users','width="20" height="20"')}</div><div class="grow"><b>Volume terkonfirmasi</b><small>${s.vol} · ${s.kel}</small></div></div>
+      <div class="li"><div class="lic" style="background:#E0EAF5;color:#2F5A86">${ic('box','width="20" height="20"')}</div><div class="grow"><b>Pesanan B2B tersedia</b><small>${s.b2b}</small></div></div>
+    </div>
+    ${here ? `<button class="btn btn-ghost btn-block" style="margin-top:14px" disabled>${ic('truck','width="18" height="18"')} Unit MP-01 sedang di sini</button>`
+      : s.off ? `<button class="btn btn-ghost btn-block" style="margin-top:14px" onclick="toast('Kepahiang dijadwalkan untuk MP-02 (lini durian, 2028)','info')">${ic('clock','width="18" height="18"')} Jadwalkan untuk MP-02</button>`
+      : s.status==='normal' ? `<button class="btn btn-ghost btn-block" style="margin-top:14px" onclick="toast('Harga normal, unit tidak perlu dikirim','info')">Pantau saja</button>`
+      : `<button class="btn btn-primary btn-block" style="margin-top:14px" onclick="kirimUnit('${s.id}')" ${S.moving?'disabled':''}>${ic('truck','width="18" height="18"')} Kirim Unit MP-01 ke ${s.name}</button>`}
+    <p class="sub" style="margin-top:10px">Unit hanya berangkat bila volume dikonfirmasi ketua kelompok dan ada pesanan B2B.</p>`;
+}
+function kirimUnit(id){
+  const s=getS(id); const from=getS(S.unitAt);
+  if(s.b2b==='—'||s.b2b==='menunggu pesanan'){ toast(`Belum ada pesanan B2B untuk ${s.name}. Unit ditahan dulu.`,'info'); return; }
+  S.moving=id; renderMap(); renderDetail();
+  const [x1,y1]=prj(from.lon,from.lat), [x2,y2]=prj(s.lon,s.lat);
+  const cx=(x1+x2)/2, cy=Math.min(y1,y2)-90;
+  const route=$('#route'); route.setAttribute('d',`M${x1} ${y1} Q${cx} ${cy} ${x2} ${y2}`); route.style.opacity=1;
+  const len=route.getTotalLength(); const mk=$('#unitMk'); const t0=performance.now(), dur=reduce?10:2600;
+  toast(`Unit MP-01 berangkat ke ${s.name} 🚚`,'truck');
+  $('#unitBadge').className='badge b-menuju'; $('#unitBadge').textContent='Dalam perjalanan';
+  const step=t=>{ const p=Math.min(1,(t-t0)/dur); const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2; const pt=route.getPointAtLength(len*e); mk.setAttribute('transform',`translate(${pt.x-18} ${pt.y+16})`);
+    if(p<1) requestAnimationFrame(step); else { S.unitAt=id; S.moving=false; s.status='siaga'; renderMap(); renderDetail(); renderSentraTable();
+      $('#unitBadge').className='badge b-normal'; $('#unitBadge').textContent='Beroperasi'; $('#unitLoc').textContent=`${s.name}, ${s.prov}`;
+      toast(`Unit tiba di ${s.name}. Siaga Serap diumumkan ke petani.`,'bolt'); confetti(30);} };
+  requestAnimationFrame(step);
+}
+function renderSentraTable(){
+  const order={siaga:0,waspada:1,normal:2};
+  $('#sBody').innerHTML=[...SENTRA,KEPAHIANG].sort((a,b)=>order[a.status]-order[b.status]).map(s=>{const drop=Math.round((1-s.now/s.avg)*100);
+    return `<tr style="cursor:pointer" onclick="selectSentra('${s.id}');jumpEl('#radar')"><td><b>${s.name}</b><br><small class="sub">${s.prov}</small></td><td>${s.kom}</td><td class="num">${rp(s.now)}</td><td class="num">${rp(s.avg)}</td><td class="num" style="color:${drop>50?'var(--chili)':'inherit'};font-weight:700">−${drop}%</td><td>${statusBadge(s.status)}${S.unitAt===s.id?' <span class="badge b-info">unit</span>':''}</td></tr>`}).join('');
+}
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
